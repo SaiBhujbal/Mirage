@@ -255,14 +255,17 @@ dropped in.
 
 ```mermaid
 sequenceDiagram
-    participant A as Attacker (1 IP)
-    participant W as WAF · L1
+    participant A as Attacker
+    participant W as WAF L1
     participant O as Origin
+
     A->>W: 130 requests in 10s
-    W->>O: forward first 120 (within budget)
-    O-->>A: 200
-    W--xA: 429 Too Many Requests (last 10)
-    Note over W: per-IP window; Redis-shared across replicas
+    W->>O: Forward first 120
+    O-->>A: 200 OK
+    W--xA: 429 Too Many Requests
+
+    Note over W: Per IP rate limit window
+    Note over W: Redis shared across replicas
 ```
 **Record:** `for i in $(seq 130); do curl -s -o /dev/null -w "%{http_code} " http://127.0.0.1:8080/; done`
 
