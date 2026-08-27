@@ -1,0 +1,80 @@
+{
+  "timestamp": "2026-01-02T16:24:44.184075",
+  "config": {
+    "models_dir": "./models",
+    "data_dir": "./data/datasets",
+    "payloads_dir": "./data/payloads",
+    "test_size": 0.15,
+    "val_size": 0.15,
+    "random_state": 42,
+    "http_n_features": 50,
+    "http_max_samples_per_category": 3000,
+    "http_min_samples_per_category": 100,
+    "network_n_features": 78,
+    "network_max_samples": 100000,
+    "evasion_ratio": 0.4,
+    "noise_std": 0.05,
+    "if_n_estimators": 200,
+    "if_contamination": 0.1,
+    "if_max_samples": 0.8,
+    "xgb_n_estimators": 300,
+    "xgb_max_depth": 6,
+    "xgb_learning_rate": 0.05,
+    "xgb_early_stopping": 30,
+    "xgb_reg_alpha": 0.1,
+    "xgb_reg_lambda": 1.0,
+    "xgb_subsample": 0.8,
+    "xgb_colsample_bytree": 0.8,
+    "http_weight": 0.6,
+    "network_weight": 0.4,
+    "xgb_weight": 0.7,
+    "if_weight": 0.3,
+    "cv_folds": 5,
+    "use_cv": true
+  },
+  "http_layer": {
+    "n_samples": 17621,
+    "n_features": 50,
+    "n_categories": 16,
+    "categories": [
+      "benign",
+      "sqli",
+      "xss",
+      "rce",
+      "path_traversal",
+      "ssrf",
+      "xxe",
+      "ssti",
+      "nosql",
+      "jwt",
+      "graphql",
+      "ldap",
+      "deserialization",
+      "prototype_pollution",
+      "crlf",
+      "open_redirect"
+    ],
+    "isolation_forest": {
+      "time": 0.2579219341278076,
+      "f1": 0.989844278943805
+    },
+    "xgboost": {
+      "time": 8.216401100158691,
+      "accuracy": 0.9742813918305597,
+      "f1": 0.9988602689765216
+    },
+    "ensemble": {
+      "f1": 0.9988602689765216,
+      "precision": 0.9990880072959416,
+      "recall": 0.9986326344576116,
+      "fpr": 0.0044444444444444444,
+      "confusion": {
+        "tn": 448,
+        "fp": 2,
+        "fn": 3,
+        "tp": 2191
+      }
+    }
+  },
+  "network_layer": null
+}

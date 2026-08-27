@@ -1,0 +1,162 @@
+# =============================================
+# DECEPTICON ML-WAF Docker Compose - DEVELOPMENT
+# =============================================
+# For local development and video demonstrations
+# Uses relaxed security settings for ease of use
+# For production, use: docker-compose -f docker-compose.production.yml up
+# =============================================
+
+version: '3.8'
+
+services:
+  # Main WAF Service
+  waf:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: decepticon-waf
+    ports:
+      - "8080:8080"
+      - "127.0.0.1:9090:9090"  # Metrics
+    environment:
+      - ENV=development  # Changed to development for easier testing
+      - HOST=0.0.0.0
+      - PORT=8080
+      - WORKERS=4
+      # Security settings (relaxed for development)
+      - REQUIRE_TLS=${REQUIRE_TLS:-false}
+      - REQUIRE_API_AUTH=${REQUIRE_API_AUTH:-false}
+      - SESSION_STORAGE_TYPE=redis
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - ENCRYPT_SESSION_DATA=${ENCRYPT_SESSION_DATA:-false}
+      - SESSION_ENCRYPTION_KEY=${SESSION_ENCRYPTION_KEY:-}
+      - ENABLE_MFA_FOR_ADMIN=${ENABLE_MFA_FOR_ADMIN:-false}
+      # Request limits
+      - MAX_REQUEST_BODY_SIZE=1048576
+      # SIEM
+      - ENABLE_SIEM=${ENABLE_SIEM:-false}
+      - SIEM_SYSLOG_HOST=${SIEM_SYSLOG_HOST:-}
+      - SIEM_WEBHOOK_URL=${SIEM_WEBHOOK_URL:-}
+      # Logging (verbose for development)
+      - LOG_LEVEL=INFO
+      - ENABLE_METRICS=true
+      - METRICS_PORT=9090
+      # Audit
+      - ENABLE_AUDIT_LOG=true
+    volumes:
+      - ./logs:/app/logs
+      - ./models:/app/models
+      - ./data:/app/data
+      # Mount data/security with restricted permissions
+      - waf-security:/app/data/security
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - waf-network
+    # Security: Don't run as root (commented for Windows compatibility)
+    # user: "1000:1000"  # Uncomment on Linux/Mac
+
+  # Redis for distributed caching
+  # SECURITY: Password protected, no external access by default
+  redis:
+    image: redis:7-alpine
+    container_name: decepticon-redis
+    # SECURITY: Remove external port exposure in production
+    # ports:
+    #   - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: >
+      redis-server 
+      --appendonly yes
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+      --requirepass ${REDIS_PASSWORD}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - waf-network
+
+  # Prometheus for metrics collection
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: decepticon-prometheus
+    # SECURITY: Internal only in production
+    ports:
+      - "127.0.0.1:9091:9090"
+    volumes:
+      - ./deploy/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+    networks:
+      - waf-network
+
+  # Grafana for dashboards
+  grafana:
+    image: grafana/grafana:latest
+    container_name: decepticon-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      # SECURITY: Change default password!
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-ChangeMeNow!}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SECURITY_DISABLE_GRAVATAR=true
+      - GF_SECURITY_COOKIE_SECURE=true
+      # Dashboard provisioning
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+      - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/provisioning/dashboards/json/waf_overview.json
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./deploy/grafana/provisioning:/etc/grafana/provisioning:ro
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+    networks:
+      - waf-network
+
+  # Log aggregation with Loki (optional)
+  loki:
+    image: grafana/loki:latest
+    container_name: decepticon-loki
+    # SECURITY: Internal only
+    # ports:
+    #   - "3100:3100"
+    volumes:
+      - loki-data:/loki
+    command: -config.file=/etc/loki/local-config.yaml
+    restart: unless-stopped
+    networks:
+      - waf-network
+
+volumes:
+  redis-data:
+  prometheus-data:
+  grafana-data:
+  loki-data:
+  waf-security:
+    # Restricted permissions for security data
+    driver: local
+
+networks:
+  waf-network:
+    driver: bridge
+    # SECURITY: Internal network only
+    internal: false

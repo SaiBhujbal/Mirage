@@ -1,0 +1,7 @@
+{
+  "dual_layer_metadata.json": "b01e73530d9620dc2a869db1d0bfbc0b3d5f2ea31a642f17c4d6ff6dcf34a257",
+  "http_classifier.xgb": "5cce6bbf6ee2cf16cbbe97aade53cddafe99c3bc4691a5cc5be63ab54b4b943a",
+  "http_isolation_forest.joblib": "14587d24dc582626364fd227ed850a12da5d902a73a9b92f3e7c43ed661cd385",
+  "http_scaler.joblib": "08505caf8492d9cac1b001d425a282382a6e3441868ecc7b672327d6fb83f454",
+  "training_report.json": "672e286f35ab0c8a19b07eeb4e03e5400a0d9d846cec2ace35f77403e56fe0ee"
+}

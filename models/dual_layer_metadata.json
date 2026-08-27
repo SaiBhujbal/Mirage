@@ -1,0 +1,60 @@
+{
+  "version": "3.0.0",
+  "trainer": "RealWorldTrainer",
+  "timestamp": "2026-01-02T16:24:55.382382",
+  "http_layer": {
+    "n_features": 50,
+    "categories": [
+      "benign",
+      "sqli",
+      "xss",
+      "rce",
+      "path_traversal",
+      "ssrf",
+      "xxe",
+      "ssti",
+      "nosql",
+      "jwt",
+      "graphql",
+      "ldap",
+      "deserialization",
+      "prototype_pollution",
+      "crlf",
+      "open_redirect"
+    ],
+    "scaler": "http_scaler.joblib",
+    "classifier": "http_classifier.xgb",
+    "isolation_forest": "http_isolation_forest.joblib"
+  },
+  "network_layer": null,
+  "ensemble_weights": {
+    "http_weight": 0.6,
+    "network_weight": 0.4,
+    "xgb_weight": 0.7,
+    "if_weight": 0.3
+  },
+  "attack_categories": [
+    "benign",
+    "sqli",
+    "xss",
+    "rce",
+    "path_traversal",
+    "ssrf",
+    "xxe",
+    "ssti",
+    "nosql",
+    "jwt",
+    "graphql",
+    "ldap",
+    "deserialization",
+    "prototype_pollution",
+    "crlf",
+    "open_redirect",
+    "dos",
+    "ddos",
+    "brute_force",
+    "port_scan",
+    "botnet"
+  ],
+  "training_source": "real_payloads"
+}

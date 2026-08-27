@@ -1,0 +1,182 @@
+{
+  "trained": "2026-07-13 00:39:07",
+  "feature_contract": [
+    "len_total",
+    "len_path",
+    "len_query",
+    "len_body",
+    "len_headers",
+    "ent_total",
+    "ent_path",
+    "ent_query",
+    "ent_body",
+    "r_special",
+    "r_upper",
+    "r_digit",
+    "r_space",
+    "r_nonascii",
+    "r_punct",
+    "r_letter",
+    "c_sql",
+    "c_xss",
+    "c_jssink",
+    "c_rce",
+    "c_traversal",
+    "c_ssrf",
+    "c_template",
+    "c_nosql",
+    "c_encoding",
+    "c_comment",
+    "n_quote",
+    "n_dquote",
+    "n_angle",
+    "n_semicolon",
+    "n_pipe",
+    "n_backtick",
+    "n_paren",
+    "n_brace",
+    "n_bracket",
+    "n_percent",
+    "n_equals",
+    "n_dollar",
+    "param_count",
+    "max_param_len",
+    "avg_param_len",
+    "dup_param",
+    "word_count",
+    "max_word_len",
+    "avg_word_len",
+    "char_diversity",
+    "bigram_uniq",
+    "trigram_uniq",
+    "url_decode_layers",
+    "hex_unicode_hits"
+  ],
+  "n_features": 50,
+  "contract_hash": "52517493547ac7b9",
+  "class_names": [
+    "benign",
+    "sqli",
+    "xss",
+    "rce",
+    "path_traversal",
+    "ssrf",
+    "xxe",
+    "jwt",
+    "graphql",
+    "prototype_pollution",
+    "deserialization",
+    "ldap",
+    "crlf",
+    "open_redirect"
+  ],
+  "malicious_threshold": 0.5,
+  "novelty_threshold": 9.803009033203125,
+  "independent_benign_fp": 0.0006,
+  "heldout_families": [
+    "nosql",
+    "ssti"
+  ],
+  "closed_set": {
+    "macro_f1": 0.9027,
+    "malicious_precision": 1.0,
+    "malicious_recall": 0.9808,
+    "benign_fp_rate": 0.0,
+    "n_test": 1017
+  },
+  "open_set_zero_day": {
+    "heldout_family_recall": {
+      "ssti": 0.976,
+      "nosql": 1.0
+    },
+    "cve_probes": [
+      {
+        "name": "Log4Shell",
+        "blocked": true,
+        "mal_prob": 1.0,
+        "novelty": 652.53,
+        "closest_family": "open_redirect"
+      },
+      {
+        "name": "SSTI Jinja2",
+        "blocked": true,
+        "mal_prob": 1.0,
+        "novelty": 433.969,
+        "closest_family": "open_redirect"
+      },
+      {
+        "name": "NoSQL $gt",
+        "blocked": false,
+        "mal_prob": 0.2329999953508377,
+        "novelty": 535.456,
+        "closest_family": "benign"
+      },
+      {
+        "name": "NoSQL $where",
+        "blocked": true,
+        "mal_prob": 0.9570000171661377,
+        "novelty": 275.394,
+        "closest_family": "prototype_pollution"
+      },
+      {
+        "name": "Struts OGNL",
+        "blocked": true,
+        "mal_prob": 0.9549999833106995,
+        "novelty": 414.884,
+        "closest_family": "sqli"
+      }
+    ],
+    "benign_probes": [
+      {
+        "name": "home",
+        "blocked": false,
+        "mal_prob": 0.00800000037997961,
+        "novelty": 9.803
+      },
+      {
+        "name": "search",
+        "blocked": false,
+        "mal_prob": 0.17100000381469727,
+        "novelty": 11.692
+      },
+      {
+        "name": "login",
+        "blocked": false,
+        "mal_prob": 0.00800000037997961,
+        "novelty": 12.665
+      },
+      {
+        "name": "catalog",
+        "blocked": false,
+        "mal_prob": 0.0,
+        "novelty": 6.348
+      },
+      {
+        "name": "article",
+        "blocked": false,
+        "mal_prob": 0.0,
+        "novelty": 4.276
+      },
+      {
+        "name": "profile",
+        "blocked": false,
+        "mal_prob": 0.0,
+        "novelty": 5.014
+      },
+      {
+        "name": "cart",
+        "blocked": false,
+        "mal_prob": 0.00800000037997961,
+        "novelty": 24.176
+      },
+      {
+        "name": "transfer",
+        "blocked": false,
+        "mal_prob": 0.0,
+        "novelty": 4.404
+      }
+    ],
+    "benign_probe_fp": 0.0
+  },
+  "train_seconds": 1.8
+}

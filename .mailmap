@@ -1,0 +1,5 @@
+# Canonicalize commit identities. Maps the "Slayer" identity to your primary one so
+# `git shortlog -sn`, GitHub's contributor graph, and blame count them as one author.
+# This changes DISPLAY only; it does not rewrite history.
+SaiBhujbal <bhujbalsai@gmail.com> Slayer <46700402+SaiBhujbal@users.noreply.github.com>
+SaiBhujbal <bhujbalsai@gmail.com> <46700402+SaiBhujbal@users.noreply.github.com>

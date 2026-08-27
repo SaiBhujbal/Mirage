@@ -1,0 +1,129 @@
+{
+  "model": "GCID: LogisticRegression over grammar-structure vector + inductive conformal",
+  "contract_hash": "e5b091e4696dce76",
+  "feature_names": [
+    "sql",
+    "xss",
+    "rce",
+    "path",
+    "ssti",
+    "log4",
+    "xxe",
+    "nosql",
+    "ldap",
+    "ssrf",
+    "redirect",
+    "crlf",
+    "struct_max",
+    "struct_sum",
+    "n_active"
+  ],
+  "grammar_names": [
+    "sql",
+    "xss",
+    "rce",
+    "path",
+    "ssti",
+    "log4",
+    "xxe",
+    "nosql",
+    "ldap",
+    "ssrf",
+    "redirect",
+    "crlf"
+  ],
+  "alpha": 0.01,
+  "min_structure": 0.4,
+  "enforce_alpha": 0.002,
+  "enforce_threshold": 0.9,
+  "conformal_threshold_at_alpha": 0.022879,
+  "n_attack": 4363,
+  "n_benign": 8680,
+  "n_calibration": 2170,
+  "in_scope_families": [
+    "crlf",
+    "header_injection",
+    "ldap",
+    "lfi",
+    "log4shell",
+    "nosql",
+    "open_redirect",
+    "path_traversal",
+    "rce",
+    "redirect",
+    "sqli",
+    "ssrf",
+    "ssti",
+    "xss",
+    "xxe"
+  ],
+  "coefficients": {
+    "sql": 1.1003,
+    "xss": 0.119,
+    "rce": 0.4117,
+    "path": 0.083,
+    "ssti": 0.1486,
+    "log4": -0.0486,
+    "xxe": -0.0021,
+    "nosql": 0.5477,
+    "ldap": 0.0145,
+    "ssrf": 0.265,
+    "redirect": 0.2591,
+    "crlf": 0.2972,
+    "struct_max": 3.3944,
+    "struct_sum": 3.1953,
+    "n_active": 5.0898
+  },
+  "heldout": {
+    "conformal_sweep": [
+      {
+        "alpha": 0.001,
+        "benign_false_alarm": 0.0,
+        "injection_recall": 0.9698,
+        "recall_no_structure_floor": 0.9698
+      },
+      {
+        "alpha": 0.002,
+        "benign_false_alarm": 0.0,
+        "injection_recall": 0.9698,
+        "recall_no_structure_floor": 0.9698
+      },
+      {
+        "alpha": 0.005,
+        "benign_false_alarm": 0.0,
+        "injection_recall": 0.9698,
+        "recall_no_structure_floor": 0.9698
+      },
+      {
+        "alpha": 0.01,
+        "benign_false_alarm": 0.0,
+        "injection_recall": 0.9698,
+        "recall_no_structure_floor": 0.9698
+      },
+      {
+        "alpha": 0.02,
+        "benign_false_alarm": 0.0,
+        "injection_recall": 0.9698,
+        "recall_no_structure_floor": 0.9698
+      },
+      {
+        "alpha": 0.05,
+        "benign_false_alarm": 0.0,
+        "injection_recall": 0.9698,
+        "recall_no_structure_floor": 0.9698
+      }
+    ],
+    "learned_at_alpha": {
+      "alpha": 0.01,
+      "min_structure": 0.4,
+      "benign_false_alarm": 0.0,
+      "injection_recall": 0.9698
+    },
+    "calibration_degenerate": true,
+    "baseline_raw_max_thr0.4": {
+      "benign_false_alarm": 0.0,
+      "injection_recall": 0.9698
+    }
+  },
+  "scope_note": "INJECTION detector. SSRF/open-redirect/IDOR/business-logic carry no interpreter grammar and score ~0 by design; other layers own them."
+}

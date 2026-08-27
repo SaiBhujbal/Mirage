@@ -1,0 +1,73 @@
+# Default values for decepticon-waf.
+# This is a YAML-formatted file.
+
+replicaCount: 2
+
+image:
+  repository: decepticon-waf
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext:
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1024Mi
+  requests:
+    cpu: 200m
+    memory: 256Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+env:
+  ENV: "production"
+  LOG_LEVEL: "INFO"
+  BLOCK_MODE: "true"
+  HOST: "0.0.0.0"
+  PORT: "8080"
+  WORKERS: "4"
+
+# Set these via helm install --set or a secrets file
+secrets:
+  # ADMIN_PASSWORD_HASH: ""
+  # SESSION_ENCRYPTION_KEY: ""

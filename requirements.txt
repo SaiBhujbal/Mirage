@@ -1,0 +1,44 @@
+# DECEPTICON ML-WAF Dependencies
+# Naval SWAVLAMBAN 2025 Challenge 3
+
+# Core
+flask>=2.3.0
+numpy>=1.24.0
+pandas>=2.0.0
+pyotp>=2.8.0
+orjson>=3.8.0
+mmh3>=3.0.0
+
+#API 
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.0
+python-multipart==0.0.6
+pydantic-settings>=2.0.0
+
+# Machine Learning
+scikit-learn>=1.3.0
+xgboost>=2.0.0
+joblib>=1.3.0
+
+onnx>=1.14.0
+onnxruntime>=1.16.0
+onnxmltools>=1.11.0
+skl2onnx>=1.15.0
+
+# Security
+werkzeug>=2.3.0
+
+# Monitoring
+prometheus_client>=0.17.0
+
+# Utilities
+requests>=2.31.0
+python-dateutil>=2.8.0
+
+# Testing (optional)
+pytest>=7.0.0
+pytest-cov>=4.0.0
+
+# Production (optional)
+gunicorn>=21.0.0

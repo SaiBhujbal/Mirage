@@ -1,0 +1,54 @@
+{
+  "model": "v3 calibrated ensemble (char-ngram LR + lexical XGB), pooled CSIC+PKDD",
+  "trained": "2026-07-14 18:10:47",
+  "n_train": 59140,
+  "n_test": 14786,
+  "roc_auc": 0.9931,
+  "ensemble_weight_char": 0.65,
+  "n_hash": 262144,
+  "operating_points": {
+    "fp_0.001": {
+      "threshold": 0.7787,
+      "benign_fp": 0.0011,
+      "recall": 0.8269
+    },
+    "fp_0.005": {
+      "threshold": 0.6745,
+      "benign_fp": 0.005,
+      "recall": 0.899
+    },
+    "fp_0.01": {
+      "threshold": 0.625,
+      "benign_fp": 0.0101,
+      "recall": 0.9213
+    },
+    "fp_0.02": {
+      "threshold": 0.5408,
+      "benign_fp": 0.02,
+      "recall": 0.946
+    }
+  },
+  "shippable_operating_point": {
+    "threshold": 0.625,
+    "benign_fp": 0.0101,
+    "recall": 0.9213,
+    "target_fp": 0.01
+  },
+  "precision_at_base_rate": {
+    "0.01": {
+      "precision": 0.4795,
+      "alerts_per_1M_req": 19212
+    },
+    "0.001": {
+      "precision": 0.0837,
+      "alerts_per_1M_req": 11011
+    },
+    "0.0001": {
+      "precision": 0.009,
+      "alerts_per_1M_req": 10191
+    }
+  },
+  "adaptive_attacker_ASR": 0.433,
+  "attacker_budget": 40,
+  "train_seconds": 40.2
+}

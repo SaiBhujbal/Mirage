@@ -1,0 +1,31 @@
+{
+  "model": "DualBranchNet (byte-CNN + lexical fusion, energy head)",
+  "epochs": 12,
+  "n_classes": 14,
+  "class_names": [
+    "benign",
+    "sqli",
+    "xss",
+    "rce",
+    "path_traversal",
+    "ssrf",
+    "xxe",
+    "jwt",
+    "graphql",
+    "prototype_pollution",
+    "deserialization",
+    "ldap",
+    "crlf",
+    "open_redirect"
+  ],
+  "closed_set": {
+    "macro_f1": 0.8986,
+    "malicious_recall": 1.0,
+    "same_dist_benign_fp": 0.0
+  },
+  "independent_benign_fp": 0.0,
+  "leave_one_family_out_recall": 0.75,
+  "energy_ood_auroc_benign_vs_novel": 0.9959,
+  "params": 49862,
+  "train_seconds": 12.3
+}

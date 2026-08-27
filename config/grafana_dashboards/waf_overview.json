@@ -1,0 +1,428 @@
+{
+  "dashboard": {
+    "title": "DECEPTICON WAF - Security Overview",
+    "tags": ["waf", "security", "overview"],
+    "timezone": "browser",
+    "schemaVersion": 38,
+    "version": 1,
+    "refresh": "5s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "WAF Status",
+        "type": "stat",
+        "gridPos": {"x": 0, "y": 0, "w": 6, "h": 4},
+        "targets": [
+          {
+            "expr": "up{job='waf-metrics'}",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "colorMode": "background",
+          "graphMode": "none",
+          "textMode": "value_and_name"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [
+              {"type": "value", "options": {"1": {"text": "ONLINE", "color": "green"}}},
+              {"type": "value", "options": {"0": {"text": "OFFLINE", "color": "red"}}}
+            ],
+            "thresholds": {
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 1, "color": "green"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 2,
+        "title": "Security Score",
+        "type": "gauge",
+        "gridPos": {"x": 6, "y": 0, "w": 6, "h": 4},
+        "targets": [
+          {
+            "expr": "9.3",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "showThresholdLabels": true,
+          "showThresholdMarkers": true
+        },
+        "fieldConfig": {
+          "defaults": {
+            "min": 0,
+            "max": 10,
+            "thresholds": {
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 5, "color": "yellow"},
+                {"value": 7, "color": "orange"},
+                {"value": 9, "color": "green"}
+              ]
+            },
+            "unit": "none"
+          }
+        }
+      },
+      {
+        "id": 3,
+        "title": "Requests/sec",
+        "type": "graph",
+        "gridPos": {"x": 12, "y": 0, "w": 6, "h": 4},
+        "targets": [
+          {
+            "expr": "rate(waf_requests_total[1m])",
+            "legendFormat": "Total RPS",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          {"format": "reqps", "label": "Requests/sec"}
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Throughput (Target: 200+ RPS)",
+        "type": "stat",
+        "gridPos": {"x": 18, "y": 0, "w": 6, "h": 4},
+        "targets": [
+          {
+            "expr": "waf_throughput_rps",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "colorMode": "background",
+          "graphMode": "area",
+          "textMode": "value"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "reqps",
+            "thresholds": {
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 100, "color": "yellow"},
+                {"value": 200, "color": "green"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 5,
+        "title": "Requests by Status",
+        "type": "timeseries",
+        "gridPos": {"x": 0, "y": 4, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "sum by(blocked) (rate(waf_requests_total[1m]))",
+            "legendFormat": "{{blocked}}",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "smooth",
+              "fillOpacity": 20,
+              "stacking": {"mode": "normal"}
+            }
+          },
+          "overrides": [
+            {
+              "matcher": {"id": "byName", "options": "true"},
+              "properties": [
+                {"id": "color", "value": {"fixedColor": "red", "mode": "fixed"}}
+              ]
+            },
+            {
+              "matcher": {"id": "byName", "options": "false"},
+              "properties": [
+                {"id": "color", "value": {"fixedColor": "green", "mode": "fixed"}}
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": 6,
+        "title": "Attacks by Category",
+        "type": "piechart",
+        "gridPos": {"x": 12, "y": 4, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "sum by(category) (increase(waf_attacks_detected_total[1h]))",
+            "legendFormat": "{{category}}",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "legend": {
+            "displayMode": "table",
+            "placement": "right",
+            "values": ["value", "percent"]
+          }
+        }
+      },
+      {
+        "id": 7,
+        "title": "ML Prediction Latency (Target: <5ms)",
+        "type": "timeseries",
+        "gridPos": {"x": 0, "y": 12, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.50, rate(waf_ml_prediction_latency_seconds_bucket[1m])) * 1000",
+            "legendFormat": "p50 (median)",
+            "refId": "A"
+          },
+          {
+            "expr": "histogram_quantile(0.95, rate(waf_ml_prediction_latency_seconds_bucket[1m])) * 1000",
+            "legendFormat": "p95",
+            "refId": "B"
+          },
+          {
+            "expr": "histogram_quantile(0.99, rate(waf_ml_prediction_latency_seconds_bucket[1m])) * 1000",
+            "legendFormat": "p99",
+            "refId": "C"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "ms",
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "smooth"
+            }
+          }
+        },
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          }
+        }
+      },
+      {
+        "id": 8,
+        "title": "ML Accuracy by Category",
+        "type": "bargauge",
+        "gridPos": {"x": 12, "y": 12, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "waf_ml_accuracy",
+            "legendFormat": "{{category}}",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "orientation": "horizontal",
+          "displayMode": "gradient",
+          "showUnfilled": true
+        },
+        "fieldConfig": {
+          "defaults": {
+            "min": 0,
+            "max": 1,
+            "unit": "percentunit",
+            "thresholds": {
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 0.90, "color": "yellow"},
+                {"value": 0.95, "color": "green"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 9,
+        "title": "False Positive Rate",
+        "type": "timeseries",
+        "gridPos": {"x": 0, "y": 20, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "waf_false_positive_rate * 100",
+            "legendFormat": "{{category}}",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "smooth",
+              "fillOpacity": 10
+            },
+            "thresholds": {
+              "steps": [
+                {"value": 0, "color": "green"},
+                {"value": 5, "color": "yellow"},
+                {"value": 10, "color": "red"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 10,
+        "title": "Anomaly Detection Timeline",
+        "type": "timeseries",
+        "gridPos": {"x": 12, "y": 20, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "rate(waf_anomalies_detected_total[1m])",
+            "legendFormat": "{{type}} ({{severity}})",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "drawStyle": "bars",
+              "fillOpacity": 80
+            }
+          }
+        }
+      },
+      {
+        "id": 11,
+        "title": "Zero-Day Detections",
+        "type": "stat",
+        "gridPos": {"x": 0, "y": 28, "w": 6, "h": 4},
+        "targets": [
+          {
+            "expr": "sum(increase(waf_zero_day_detections_total[1h]))",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "colorMode": "background",
+          "graphMode": "area",
+          "textMode": "value"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "steps": [
+                {"value": 0, "color": "green"},
+                {"value": 1, "color": "yellow"},
+                {"value": 10, "color": "red"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 12,
+        "title": "Bot Detections",
+        "type": "stat",
+        "gridPos": {"x": 6, "y": 28, "w": 6, "h": 4},
+        "targets": [
+          {
+            "expr": "sum(increase(waf_bot_detections_total[1h]))",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "colorMode": "background",
+          "graphMode": "area"
+        }
+      },
+      {
+        "id": 13,
+        "title": "API Abuse Events",
+        "type": "stat",
+        "gridPos": {"x": 12, "y": 28, "w": 6, "h": 4},
+        "targets": [
+          {
+            "expr": "sum(increase(waf_api_abuse_detections_total[1h]))",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "colorMode": "background",
+          "graphMode": "area"
+        }
+      },
+      {
+        "id": 14,
+        "title": "Active Connections",
+        "type": "stat",
+        "gridPos": {"x": 18, "y": 28, "w": 6, "h": 4},
+        "targets": [
+          {
+            "expr": "waf_active_connections",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "steps": [
+                {"value": 0, "color": "green"},
+                {"value": 500, "color": "yellow"},
+                {"value": 1000, "color": "red"}
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "templating": {
+      "list": [
+        {
+          "name": "category",
+          "type": "query",
+          "datasource": "Prometheus",
+          "query": "label_values(waf_attacks_detected_total, category)",
+          "multi": true,
+          "includeAll": true
+        },
+        {
+          "name": "severity",
+          "type": "query",
+          "datasource": "Prometheus",
+          "query": "label_values(waf_attacks_detected_total, severity)",
+          "multi": true,
+          "includeAll": true
+        }
+      ]
+    },
+    "annotations": {
+      "list": [
+        {
+          "name": "Model Updates",
+          "datasource": "Prometheus",
+          "expr": "changes(waf_model_updates_total[1m]) > 0",
+          "tagKeys": "trigger",
+          "textFormat": "Model updated: {{trigger}}",
+          "iconColor": "blue"
+        },
+        {
+          "name": "Critical Alerts",
+          "datasource": "Prometheus",
+          "expr": "ALERTS{severity='critical'}",
+          "tagKeys": "alertname",
+          "textFormat": "ALERT: {{alertname}}",
+          "iconColor": "red"
+        }
+      ]
+    }
+  },
+  "overwrite": true
+}

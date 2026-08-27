@@ -1,0 +1,32 @@
+{
+  "live": "v2026.07.13-a",
+  "previous": null,
+  "versions": {
+    "v2026.07.13-a": {
+      "version": "v2026.07.13-a",
+      "created": "2026-08-11 23:29:28",
+      "artifacts": {
+        "clf": "csic_classifier.json"
+      },
+      "metrics": {
+        "recall": 0.92,
+        "fp": 0.05
+      },
+      "notes": "baseline",
+      "status": "live"
+    },
+    "v2026.07.13-b": {
+      "version": "v2026.07.13-b",
+      "created": "2026-08-11 23:29:28",
+      "artifacts": {
+        "clf": "challenger.json"
+      },
+      "metrics": {
+        "recall": 0.94,
+        "fp": 0.049
+      },
+      "notes": "canary winner",
+      "status": "rolled_back"
+    }
+  }
+}

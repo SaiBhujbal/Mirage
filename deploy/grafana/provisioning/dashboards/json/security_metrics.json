@@ -1,0 +1,550 @@
+{
+  "title": "DECEPTICON WAF - Security & Threat Intelligence",
+  "tags": ["waf", "security", "threats", "attacks"],
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "version": 1,
+  "refresh": "10s",
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "panels": [
+      {
+        "id": 1,
+        "title": "Threat Level",
+        "type": "gauge",
+        "gridPos": {"x": 0, "y": 0, "w": 6, "h": 6},
+        "targets": [
+          {
+            "expr": "rate(waf_attacks_detected_total[5m]) * 100",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "showThresholdLabels": true,
+          "showThresholdMarkers": true
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "min": 0,
+            "max": 100,
+            "thresholds": {
+              "steps": [
+                {"value": 0, "color": "green"},
+                {"value": 10, "color": "yellow"},
+                {"value": 50, "color": "orange"},
+                {"value": 100, "color": "red"}
+              ]
+            },
+            "mappings": [
+              {"type": "range", "options": {"from": 0, "to": 10, "result": {"text": "LOW"}}},
+              {"type": "range", "options": {"from": 10, "to": 50, "result": {"text": "MEDIUM"}}},
+              {"type": "range", "options": {"from": 50, "to": 100, "result": {"text": "HIGH"}}},
+              {"type": "range", "options": {"from": 100, "to": 1000, "result": {"text": "CRITICAL"}}}
+            ]
+          }
+        }
+      },
+      {
+        "id": 2,
+        "title": "Attacks Blocked (24h)",
+        "type": "stat",
+        "gridPos": {"x": 6, "y": 0, "w": 6, "h": 3},
+        "targets": [
+          {
+            "expr": "sum(increase(waf_attacks_detected_total{blocked='True'}[24h]))",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "colorMode": "background",
+          "graphMode": "area",
+          "textMode": "value"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "decimals": 0,
+            "thresholds": {
+              "steps": [
+                {"value": 0, "color": "green"},
+                {"value": 100, "color": "yellow"},
+                {"value": 1000, "color": "red"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 3,
+        "title": "Zero-Day Detections (24h)",
+        "type": "stat",
+        "gridPos": {"x": 12, "y": 0, "w": 6, "h": 3},
+        "targets": [
+          {
+            "expr": "sum(increase(waf_zero_day_detections_total[24h]))",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "colorMode": "background",
+          "textMode": "value"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "decimals": 0,
+            "thresholds": {
+              "steps": [
+                {"value": 0, "color": "green"},
+                {"value": 1, "color": "yellow"},
+                {"value": 10, "color": "red"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 4,
+        "title": "Anomalies Detected (24h)",
+        "type": "stat",
+        "gridPos": {"x": 18, "y": 0, "w": 6, "h": 3},
+        "targets": [
+          {
+            "expr": "sum(increase(waf_anomalies_detected_total[24h]))",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "colorMode": "background",
+          "textMode": "value"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "decimals": 0
+          }
+        }
+      },
+      {
+        "id": 5,
+        "title": "Bot Traffic (24h)",
+        "type": "stat",
+        "gridPos": {"x": 6, "y": 3, "w": 6, "h": 3},
+        "targets": [
+          {
+            "expr": "sum(increase(waf_bot_detections_total[24h]))",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "colorMode": "value",
+          "textMode": "value"
+        }
+      },
+      {
+        "id": 6,
+        "title": "API Abuse (24h)",
+        "type": "stat",
+        "gridPos": {"x": 12, "y": 3, "w": 6, "h": 3},
+        "targets": [
+          {
+            "expr": "sum(increase(waf_api_abuse_detections_total[24h]))",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "colorMode": "value",
+          "textMode": "value"
+        }
+      },
+      {
+        "id": 7,
+        "title": "Block Rate %",
+        "type": "stat",
+        "gridPos": {"x": 18, "y": 3, "w": 6, "h": 3},
+        "targets": [
+          {
+            "expr": "sum(rate(waf_requests_blocked_total[5m])) / sum(rate(waf_requests_total[5m])) * 100",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "colorMode": "value",
+          "textMode": "value"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "decimals": 2
+          }
+        }
+      },
+      {
+        "id": 8,
+        "title": "Attack Timeline (Requests/sec)",
+        "type": "timeseries",
+        "gridPos": {"x": 0, "y": 6, "w": 24, "h": 8},
+        "targets": [
+          {
+            "expr": "sum by(category) (rate(waf_attacks_detected_total[1m]))",
+            "legendFormat": "{{category}}",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "reqps",
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "smooth",
+              "fillOpacity": 30,
+              "stacking": {"mode": "normal"}
+            }
+          }
+        }
+      },
+      {
+        "id": 9,
+        "title": "Attack Categories Distribution",
+        "type": "piechart",
+        "gridPos": {"x": 0, "y": 14, "w": 8, "h": 8},
+        "targets": [
+          {
+            "expr": "sum by(category) (increase(waf_attacks_detected_total[24h]))",
+            "legendFormat": "{{category}}",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "legend": {
+            "displayMode": "table",
+            "placement": "right",
+            "values": ["value", "percent"]
+          },
+          "pieType": "donut"
+        }
+      },
+      {
+        "id": 10,
+        "title": "Attack Severity Distribution",
+        "type": "bargauge",
+        "gridPos": {"x": 8, "y": 14, "w": 8, "h": 8},
+        "targets": [
+          {
+            "expr": "sum by(severity) (increase(waf_attacks_detected_total[24h]))",
+            "legendFormat": "{{severity}}",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "orientation": "horizontal",
+          "displayMode": "gradient"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "steps": [
+                {"value": 0, "color": "green"},
+                {"value": 100, "color": "yellow"},
+                {"value": 500, "color": "orange"},
+                {"value": 1000, "color": "red"}
+              ]
+            }
+          },
+          "overrides": [
+            {
+              "matcher": {"id": "byName", "options": "critical"},
+              "properties": [
+                {"id": "color", "value": {"fixedColor": "red", "mode": "fixed"}}
+              ]
+            },
+            {
+              "matcher": {"id": "byName", "options": "high"},
+              "properties": [
+                {"id": "color", "value": {"fixedColor": "orange", "mode": "fixed"}}
+              ]
+            },
+            {
+              "matcher": {"id": "byName", "options": "medium"},
+              "properties": [
+                {"id": "color", "value": {"fixedColor": "yellow", "mode": "fixed"}}
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": 11,
+        "title": "Top Attack Sources",
+        "type": "table",
+        "gridPos": {"x": 16, "y": 14, "w": 8, "h": 8},
+        "targets": [
+          {
+            "expr": "topk(10, sum by(source) (increase(waf_attacks_detected_total[24h])))",
+            "format": "table",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "showHeader": true
+        },
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "align": "auto",
+              "displayMode": "auto"
+            }
+          },
+          "overrides": [
+            {
+              "matcher": {"id": "byName", "options": "Value"},
+              "properties": [
+                {"id": "displayName", "value": "Attack Count"},
+                {"id": "custom.displayMode", "value": "color-background"}
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": 12,
+        "title": "Anomaly Score Histogram",
+        "type": "barchart",
+        "gridPos": {"x": 0, "y": 22, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "sum by (le) (waf_anomaly_score_bucket)",
+            "legendFormat": "{{le}}",
+            "refId": "A",
+            "instant": true,
+            "format": "table"
+          }
+        ],
+        "options": {
+          "orientation": "vertical",
+          "xField": "le",
+          "showValue": "always",
+          "stacking": "none",
+          "groupWidth": 0.7,
+          "barWidth": 0.9
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisLabel": "Count",
+              "fillOpacity": 80
+            }
+          }
+        }
+      },
+      {
+        "id": 13,
+        "title": "Anomaly Timeline by Type",
+        "type": "timeseries",
+        "gridPos": {"x": 12, "y": 22, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "sum by(type) (rate(waf_anomalies_detected_total[5m]))",
+            "legendFormat": "{{type}}",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "drawStyle": "bars",
+              "fillOpacity": 80,
+              "stacking": {"mode": "normal"}
+            }
+          }
+        }
+      },
+      {
+        "id": 14,
+        "title": "Attack Patterns Detection",
+        "type": "timeseries",
+        "gridPos": {"x": 0, "y": 30, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "topk(10, sum by(pattern_type) (rate(waf_attack_patterns_total[5m])))",
+            "legendFormat": "{{pattern_type}}",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "smooth",
+              "fillOpacity": 20
+            }
+          }
+        }
+      },
+      {
+        "id": 15,
+        "title": "Zero-Day Detection Timeline",
+        "type": "timeseries",
+        "gridPos": {"x": 12, "y": 30, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "sum by(pattern) (rate(waf_zero_day_detections_total[5m]))",
+            "legendFormat": "{{pattern}}",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "drawStyle": "bars",
+              "fillOpacity": 100
+            },
+            "thresholds": {
+              "steps": [
+                {"value": 0, "color": "green"},
+                {"value": 0.1, "color": "yellow"},
+                {"value": 1, "color": "red"}
+              ]
+            }
+          }
+        },
+        "alert": {
+          "name": "Zero-Day Attack",
+          "message": "Potential zero-day attack detected!",
+          "conditions": [
+            {
+              "evaluator": {"type": "gt", "params": [0]},
+              "query": {"params": ["A", "5m", "now"]}
+            }
+          ]
+        }
+      },
+      {
+        "id": 16,
+        "title": "Bot Detection by Type",
+        "type": "piechart",
+        "gridPos": {"x": 0, "y": 38, "w": 8, "h": 8},
+        "targets": [
+          {
+            "expr": "sum by(bot_type) (increase(waf_bot_detections_total[24h]))",
+            "legendFormat": "{{bot_type}}",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "legend": {
+            "displayMode": "table",
+            "placement": "right",
+            "values": ["value", "percent"]
+          }
+        }
+      },
+      {
+        "id": 17,
+        "title": "API Abuse by Type",
+        "type": "bargauge",
+        "gridPos": {"x": 8, "y": 38, "w": 8, "h": 8},
+        "targets": [
+          {
+            "expr": "sum by(abuse_type) (increase(waf_api_abuse_detections_total[24h]))",
+            "legendFormat": "{{abuse_type}}",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "orientation": "horizontal",
+          "displayMode": "gradient"
+        }
+      },
+      {
+        "id": 18,
+        "title": "Blocked vs Allowed Traffic",
+        "type": "timeseries",
+        "gridPos": {"x": 16, "y": 38, "w": 8, "h": 8},
+        "targets": [
+          {
+            "expr": "sum(rate(waf_requests_blocked_total[1m]))",
+            "legendFormat": "Blocked",
+            "refId": "A"
+          },
+          {
+            "expr": "sum(rate(waf_requests_allowed_total[1m]))",
+            "legendFormat": "Allowed",
+            "refId": "B"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "reqps",
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "smooth",
+              "fillOpacity": 20,
+              "stacking": {"mode": "normal"}
+            }
+          },
+          "overrides": [
+            {
+              "matcher": {"id": "byName", "options": "Blocked"},
+              "properties": [
+                {"id": "color", "value": {"fixedColor": "red", "mode": "fixed"}}
+              ]
+            },
+            {
+              "matcher": {"id": "byName", "options": "Allowed"},
+              "properties": [
+                {"id": "color", "value": {"fixedColor": "green", "mode": "fixed"}}
+              ]
+            }
+          ]
+        }
+      }
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "severity",
+        "type": "query",
+        "datasource": "Prometheus",
+        "query": "label_values(waf_attacks_detected_total, severity)",
+        "multi": true,
+        "includeAll": true
+      },
+      {
+        "name": "category",
+        "type": "query",
+        "datasource": "Prometheus",
+        "query": "label_values(waf_attacks_detected_total, category)",
+        "multi": true,
+        "includeAll": true
+      },
+      {
+        "name": "time_range",
+        "type": "interval",
+        "options": ["1h", "6h", "24h", "7d", "30d"],
+        "current": {"text": "24h", "value": "24h"}
+      }
+    ]
+  },
+  "annotations": {
+    "list": [
+      {
+        "name": "Zero-Day Alerts",
+        "datasource": "Prometheus",
+        "expr": "changes(waf_zero_day_detections_total[1m]) > 0",
+        "textFormat": "Zero-Day: {{pattern}}",
+        "iconColor": "red"
+      },
+      {
+        "name": "High Severity Attacks",
+        "datasource": "Prometheus",
+        "expr": "rate(waf_attacks_detected_total{severity='critical'}[1m]) > 10",
+        "textFormat": "High severity attack wave",
+        "iconColor": "dark-red"
+      }
+    ]
+  }
+}

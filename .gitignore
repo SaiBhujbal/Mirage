@@ -1,0 +1,187 @@
+# ============================================
+# DECEPTICON SECURITY - DO NOT COMMIT
+# ============================================
+
+# Security data - NEVER commit
+data/security/
+data/audit/
+*.key
+*.pem
+ADMIN_KEY.txt
+.audit_key
+
+# Environment files - contain secrets
+.env
+.env.local
+.env.production
+.env.*.local
+
+# ============================================
+# PYTHON
+# ============================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+.venv/
+ENV/
+env/
+
+# ============================================
+# IDE & EDITORS
+# ============================================
+.idea/
+.vscode/
+*.swp
+*.swo
+*.swn
+*~
+.project
+.pydevproject
+.settings/
+*.sublime-workspace
+*.sublime-project
+
+# ============================================
+# LOGS
+# ============================================
+*.log
+logs/
+log/
+
+# ============================================
+# TESTING
+# ============================================
+.coverage
+.pytest_cache/
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+.hypothesis/
+
+# ============================================
+# ML MODELS (Optional - uncomment if large)
+# ============================================
+# models/*.joblib
+# models/*.pkl
+# models/*.onnx
+
+# ============================================
+# DATA (Large payload datasets excluded from repo)
+# ============================================
+data/payloads/PayloadsAllTheThings/
+data/payloads/SecLists/
+data/payloads/fuzzdb/
+# Keep trained data and adaptive learning
+!data/trained/
+!data/adaptive/
+
+# ============================================
+# DOCKER
+# ============================================
+*.log
+docker-compose.override.yml
+
+# ============================================
+# OS FILES
+# ============================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ============================================
+# TEMPORARY FILES
+# ============================================
+tmp/
+temp/
+*.tmp
+*.temp
+*.bak
+*.backup
+
+# ============================================
+# SECRETS & CERTIFICATES
+# ============================================
+*.pem
+*.key
+*.crt
+*.csr
+*.p12
+*.pfx
+secrets/
+certs/
+ssl/
+
+# ============================================
+# REPORTS
+# ============================================
+bandit-report.json
+safety-report.json
+*.sarif
+
+# ============================================
+# ADDED — pre-publication cleanup
+# ============================================
+
+# Downloaded academic corpora (135MB). Re-fetched on demand by
+# data_pipeline/csic_loader.py and pkdd_loader.py. Also: CSIC-2010 and
+# ECML/PKDD-2007 are research datasets with "cite us" terms — do not redistribute.
+data/corpus/raw/
+data/corpus/kev_raw.json
+
+# Runtime state produced by the WAF / MLOps loop (not source)
+data/corpus/zeroday_store/
+data/corpus/captured_zero_days.jsonl
+data/corpus/slack_decisions.jsonl
+data/corpus/pending_approvals.json
+data/corpus/manifest_*.json
+data/corpus/kev_weights.json
+data/adaptive/
+models_v2/runs/
+models_v2/PROMOTED.flag
+
+# Generated at runtime by the demo app
+demo/novabank.db
+
+# Local agent/editor config — not part of the project
+.claude/
+.claude/settings.local.json
+CLAUDE.local.md
+
+# Backups created by tooling
+*.doctor-backup
+*.bak
+*.orig
+
+# Test/scratch artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+/tmp/
+scratch/

@@ -1,0 +1,208 @@
+# Prometheus Alerting Rules for DECEPTICON WAF
+# Enterprise security monitoring alerts
+
+groups:
+  - name: waf_performance
+    interval: 10s
+    rules:
+      # High latency alert
+      - alert: HighMLLatency
+        expr: histogram_quantile(0.95, rate(waf_ml_prediction_latency_seconds_bucket[1m])) > 0.005
+        for: 2m
+        labels:
+          severity: warning
+          component: ml-engine
+        annotations:
+          summary: "High ML prediction latency detected"
+          description: "95th percentile ML latency is {{ $value | humanizeDuration }} (threshold: 5ms)"
+
+      # Very high latency - critical
+      - alert: CriticalMLLatency
+        expr: histogram_quantile(0.95, rate(waf_ml_prediction_latency_seconds_bucket[1m])) > 0.010
+        for: 1m
+        labels:
+          severity: critical
+          component: ml-engine
+        annotations:
+          summary: "CRITICAL: ML prediction latency exceeds 10ms"
+          description: "95th percentile ML latency is {{ $value | humanizeDuration }} - performance degradation"
+
+      # Low throughput
+      - alert: LowThroughput
+        expr: waf_throughput_rps < 100
+        for: 5m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "WAF throughput below expected level"
+          description: "Current throughput: {{ $value }} req/s (expected: 200+ req/s)"
+
+  - name: waf_security
+    interval: 5s
+    rules:
+      # High attack rate
+      - alert: HighAttackRate
+        expr: rate(waf_attacks_detected_total[1m]) > 10
+        for: 2m
+        labels:
+          severity: warning
+          component: security
+        annotations:
+          summary: "High attack rate detected"
+          description: "{{ $value | humanize }} attacks per second in the last minute"
+
+      # DDoS-like traffic
+      - alert: PossibleDDoS
+        expr: rate(waf_requests_total[1m]) > 1000
+        for: 1m
+        labels:
+          severity: critical
+          component: security
+        annotations:
+          summary: "POSSIBLE DDoS ATTACK"
+          description: "{{ $value | humanize }} requests per second - potential DDoS"
+
+      # Zero-day detection spike
+      - alert: ZeroDaySpike
+        expr: rate(waf_zero_day_detections_total[5m]) > 5
+        for: 1m
+        labels:
+          severity: critical
+          component: zero-day
+        annotations:
+          summary: "CRITICAL: Multiple zero-day patterns detected"
+          description: "{{ $value | humanize }} zero-day detections per second - investigate immediately"
+
+      # Anomaly spike
+      - alert: AnomalySpike
+        expr: rate(waf_anomalies_detected_total[5m]) > 20
+        for: 2m
+        labels:
+          severity: warning
+          component: anomaly-detection
+        annotations:
+          summary: "Anomaly detection spike"
+          description: "{{ $value | humanize }} anomalies per second - potential coordinated attack"
+
+  - name: waf_quality
+    interval: 30s
+    rules:
+      # High false positive rate
+      - alert: HighFalsePositiveRate
+        expr: waf_false_positive_rate > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          component: ml-quality
+        annotations:
+          summary: "High false positive rate detected"
+          description: "False positive rate: {{ $value | humanizePercentage }} (threshold: 5%)"
+
+      # Critical false positive rate
+      - alert: CriticalFalsePositiveRate
+        expr: waf_false_positive_rate > 0.10
+        for: 2m
+        labels:
+          severity: critical
+          component: ml-quality
+        annotations:
+          summary: "CRITICAL: False positive rate too high"
+          description: "False positive rate: {{ $value | humanizePercentage }} - model retraining required"
+
+      # ML accuracy degradation
+      - alert: MLAccuracyDegradation
+        expr: waf_ml_accuracy < 0.95
+        for: 10m
+        labels:
+          severity: warning
+          component: ml-quality
+        annotations:
+          summary: "ML model accuracy degraded"
+          description: "Current accuracy: {{ $value | humanizePercentage }} (expected: >95%)"
+
+      # False negatives detected
+      - alert: FalseNegativesDetected
+        expr: rate(waf_false_negatives_total[10m]) > 1
+        for: 5m
+        labels:
+          severity: critical
+          component: security
+        annotations:
+          summary: "CRITICAL: Missed attacks detected (false negatives)"
+          description: "{{ $value | humanize }} false negatives per second - attacks bypassing WAF"
+
+  - name: waf_bot_detection
+    interval: 15s
+    rules:
+      # Bot attack wave
+      - alert: BotAttackWave
+        expr: rate(waf_bot_detections_total{blocked="true"}[5m]) > 50
+        for: 2m
+        labels:
+          severity: warning
+          component: bot-detection
+        annotations:
+          summary: "Bot attack wave detected"
+          description: "{{ $value | humanize }} bots blocked per second"
+
+      # API abuse
+      - alert: APIAbuse
+        expr: rate(waf_api_abuse_detections_total[5m]) > 10
+        for: 3m
+        labels:
+          severity: warning
+          component: api-protection
+        annotations:
+          summary: "API abuse pattern detected"
+          description: "{{ $value | humanize }} API abuse events per second"
+
+  - name: waf_system
+    interval: 30s
+    rules:
+      # High connection count
+      - alert: HighConnectionCount
+        expr: waf_active_connections > 1000
+        for: 5m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "High number of active connections"
+          description: "{{ $value }} active connections (threshold: 1000)"
+
+      # Model update failure
+      - alert: ModelUpdateFailed
+        expr: increase(waf_model_updates_total{success="false"}[1h]) > 0
+        for: 5m
+        labels:
+          severity: critical
+          component: adaptive-learning
+        annotations:
+          summary: "ML model update failed"
+          description: "{{ $value }} failed model updates in the last hour"
+
+  - name: waf_compliance
+    interval: 1h
+    rules:
+      # Insufficient logging
+      - alert: InsufficientLogging
+        expr: rate(waf_requests_total[1h]) > 100 and absent(up{job="waf-metrics"})
+        for: 10m
+        labels:
+          severity: critical
+          component: compliance
+        annotations:
+          summary: "COMPLIANCE: WAF metrics not being logged"
+          description: "Processing requests but metrics exporter is down - compliance violation"
+
+      # Missing feedback loop
+      - alert: NoAdminFeedback
+        expr: increase(waf_feedback_submissions_total[24h]) == 0
+        for: 24h
+        labels:
+          severity: warning
+          component: compliance
+        annotations:
+          summary: "No admin feedback in 24 hours"
+          description: "Admin feedback loop not being used - manual review required"

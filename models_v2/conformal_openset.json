@@ -1,0 +1,37 @@
+{
+  "method": "inductive conformal anomaly detection (Mahalanobis nonconformity)",
+  "guarantee": "benign false-alarm rate <= alpha under exchangeability",
+  "calibration_n": 1120,
+  "results": [
+    {
+      "alpha": 0.001,
+      "benign_false_alarm": 0.0,
+      "zero_day_recall": 1.0,
+      "known_attack_recall": 0.9661
+    },
+    {
+      "alpha": 0.005,
+      "benign_false_alarm": 0.0,
+      "zero_day_recall": 1.0,
+      "known_attack_recall": 0.9661
+    },
+    {
+      "alpha": 0.01,
+      "benign_false_alarm": 0.0,
+      "zero_day_recall": 1.0,
+      "known_attack_recall": 0.9661
+    },
+    {
+      "alpha": 0.02,
+      "benign_false_alarm": 0.0089,
+      "zero_day_recall": 1.0,
+      "known_attack_recall": 0.9864
+    },
+    {
+      "alpha": 0.05,
+      "benign_false_alarm": 0.0429,
+      "zero_day_recall": 1.0,
+      "known_attack_recall": 0.9887
+    }
+  ]
+}

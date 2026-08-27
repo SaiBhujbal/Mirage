@@ -1,0 +1,103 @@
+# =============================================
+# DECEPTICON WAF - Docker Build Exclusions
+# =============================================
+# Excludes files not needed at runtime to reduce image size
+# Payload datasets are ONLY needed for training, not runtime
+
+# =============================================
+# TRAINING DATA (NOT NEEDED - Models already trained)
+# =============================================
+data/payloads/
+data/payloads/PayloadsAllTheThings/
+data/payloads/SecLists/
+data/payloads/fuzzdb/
+
+# =============================================
+# PYTHON CACHE & BYTECODE
+# =============================================
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+.pytest_cache/
+*.py[cod]
+*$py.class
+
+# =============================================
+# GIT & VERSION CONTROL
+# =============================================
+.git/
+.gitignore
+.gitattributes
+
+# =============================================
+# DOCUMENTATION (Keep only README.md)
+# =============================================
+docs/
+*.md
+!README.md
+
+# =============================================
+# TESTS (Not needed in production image)
+# =============================================
+tests/
+htmlcov/
+.coverage
+.tox/
+.hypothesis/
+
+# =============================================
+# LOGS & RUNTIME DATA (Generated at runtime)
+# =============================================
+logs/
+*.log
+data/feedback/
+data/adaptive/
+data/audit/
+data/siem/
+
+# =============================================
+# BUILD ARTIFACTS
+# =============================================
+dist/
+build/
+*.egg-info/
+.eggs/
+
+# =============================================
+# IDE & EDITOR FILES
+# =============================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# =============================================
+# ENVIRONMENT FILES (Use docker-compose env)
+# =============================================
+.env
+.env.local
+.env.*.local
+
+# =============================================
+# DOCKER FILES (Don't copy into image)
+# =============================================
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# =============================================
+# CI/CD
+# =============================================
+.github/
+.gitlab-ci.yml
+.travis.yml
+
+# =============================================
+# MISC
+# =============================================
+*.bak
+*.tmp
+*.temp

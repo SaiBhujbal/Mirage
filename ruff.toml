@@ -1,0 +1,29 @@
+# Ruff config for Decepticon-WAF.
+# Pragmatic for a large existing codebase: enforce real-bug rules (pyflakes F, syntax E9) and
+# import hygiene everywhere; the newly added modules are held to the full lint set in CI.
+line-length = 120
+target-version = "py311"
+
+exclude = [
+    "graphify-out", "data", "models", "models_v2", ".venv", "venv", "__pycache__",
+    "build", "dist", "*.ipynb",
+]
+
+[lint]
+# Real bugs only, repo-wide: F = pyflakes (undefined names, unused imports/vars),
+# E9 = syntax errors. Deliberately NOT enabling import-sorting (I): this codebase does
+# `sys.path.insert(...)` before imports by design, and reordering would break modules at
+# runtime. Style rules (W/E501) are left out so CI gates on correctness, not formatting.
+select = ["F", "E9"]
+# Ignore cosmetic/style-only pyflakes findings so the gate signals real correctness bugs:
+#   F401 unused-import (noisy across legacy re-export modules)
+#   F541 f-string without placeholders (cosmetic)
+#   F841 assigned-but-unused local (style, not a correctness bug)
+ignore = ["F401", "F541", "F841"]
+
+[lint.per-file-ignores]
+# tests may shadow/redefine and import lazily
+"tests/*" = ["F811", "F401"]
+# `field` is a public method-parameter name here; it harmlessly shadows dataclasses.field
+# (unused in that scope). Renaming would break callers' kwargs, so ignore the shadow.
+"core/persistent_storage.py" = ["F811"]

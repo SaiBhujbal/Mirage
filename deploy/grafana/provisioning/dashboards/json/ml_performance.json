@@ -1,0 +1,447 @@
+{
+  "title": "DECEPTICON WAF - ML Performance & Quality",
+  "tags": ["waf", "ml", "performance", "accuracy"],
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "version": 1,
+  "refresh": "5s",
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "panels": [
+      {
+        "id": 1,
+        "title": "ML Model Status",
+        "type": "stat",
+        "gridPos": {"x": 0, "y": 0, "w": 4, "h": 4},
+        "targets": [
+          {
+            "expr": "up{job='waf-metrics'}",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "colorMode": "background",
+          "textMode": "value_and_name"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [
+              {"type": "value", "options": {"1": {"text": "ACTIVE", "color": "green"}}},
+              {"type": "value", "options": {"0": {"text": "DOWN", "color": "red"}}}
+            ]
+          }
+        }
+      },
+      {
+        "id": 2,
+        "title": "Total ML Predictions",
+        "type": "stat",
+        "gridPos": {"x": 4, "y": 0, "w": 4, "h": 4},
+        "targets": [
+          {
+            "expr": "sum(waf_ml_predictions_total)",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "decimals": 0
+          }
+        }
+      },
+      {
+        "id": 3,
+        "title": "Predictions/sec",
+        "type": "graph",
+        "gridPos": {"x": 8, "y": 0, "w": 8, "h": 4},
+        "targets": [
+          {
+            "expr": "rate(waf_ml_predictions_total[1m])",
+            "legendFormat": "{{model_type}}",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          {"format": "ops", "label": "Predictions/sec"}
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Overall ML Accuracy",
+        "type": "gauge",
+        "gridPos": {"x": 16, "y": 0, "w": 8, "h": 4},
+        "targets": [
+          {
+            "expr": "avg(waf_ml_accuracy)",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "showThresholdLabels": true,
+          "showThresholdMarkers": true
+        },
+        "fieldConfig": {
+          "defaults": {
+            "min": 0,
+            "max": 1,
+            "unit": "percentunit",
+            "thresholds": {
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 0.80, "color": "yellow"},
+                {"value": 0.90, "color": "orange"},
+                {"value": 0.95, "color": "green"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 5,
+        "title": "Latency Distribution (Target: <5ms)",
+        "type": "timeseries",
+        "gridPos": {"x": 0, "y": 4, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.50, rate(waf_ml_prediction_latency_seconds_bucket[1m])) * 1000",
+            "legendFormat": "p50 (median)",
+            "refId": "A"
+          },
+          {
+            "expr": "histogram_quantile(0.90, rate(waf_ml_prediction_latency_seconds_bucket[1m])) * 1000",
+            "legendFormat": "p90",
+            "refId": "B"
+          },
+          {
+            "expr": "histogram_quantile(0.95, rate(waf_ml_prediction_latency_seconds_bucket[1m])) * 1000",
+            "legendFormat": "p95",
+            "refId": "C"
+          },
+          {
+            "expr": "histogram_quantile(0.99, rate(waf_ml_prediction_latency_seconds_bucket[1m])) * 1000",
+            "legendFormat": "p99",
+            "refId": "D"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "ms",
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "smooth",
+              "lineWidth": 2
+            }
+          },
+          "overrides": [
+            {
+              "matcher": {"id": "byName", "options": "p99"},
+              "properties": [
+                {"id": "color", "value": {"fixedColor": "red", "mode": "fixed"}}
+              ]
+            }
+          ]
+        },
+        "options": {
+          "tooltip": {"mode": "multi"}
+        }
+      },
+      {
+        "id": 6,
+        "title": "Latency Heatmap",
+        "type": "heatmap",
+        "gridPos": {"x": 12, "y": 4, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "sum(rate(waf_ml_prediction_latency_seconds_bucket[1m])) by (le)",
+            "format": "heatmap",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "calculate": true,
+          "cellGap": 2,
+          "color": {
+            "scheme": "Spectral"
+          }
+        },
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "hideFrom": {
+                "tooltip": false,
+                "viz": false,
+                "legend": false
+              }
+            }
+          }
+        }
+      },
+      {
+        "id": 7,
+        "title": "Accuracy by Attack Category",
+        "type": "timeseries",
+        "gridPos": {"x": 0, "y": 12, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "waf_ml_accuracy{category!='general'}",
+            "legendFormat": "{{category}}",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percentunit",
+            "min": 0.8,
+            "max": 1.0,
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "smooth",
+              "fillOpacity": 10
+            }
+          }
+        }
+      },
+      {
+        "id": 8,
+        "title": "Confidence Score Distribution",
+        "type": "timeseries",
+        "gridPos": {"x": 12, "y": 12, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "waf_ml_confidence_sum / waf_ml_confidence_count",
+            "legendFormat": "{{category}}",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "min": 0,
+            "max": 1,
+            "custom": {
+              "drawStyle": "line",
+              "fillOpacity": 20
+            }
+          }
+        }
+      },
+      {
+        "id": 9,
+        "title": "False Positives Over Time",
+        "type": "timeseries",
+        "gridPos": {"x": 0, "y": 20, "w": 8, "h": 8},
+        "targets": [
+          {
+            "expr": "increase(waf_false_positives_total[5m])",
+            "legendFormat": "{{category}}",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "drawStyle": "bars",
+              "fillOpacity": 80
+            }
+          },
+          "overrides": [
+            {
+              "matcher": {"id": "byRegexp", "options": "/.*sqli.*/"},
+              "properties": [
+                {"id": "color", "value": {"fixedColor": "blue", "mode": "fixed"}}
+              ]
+            },
+            {
+              "matcher": {"id": "byRegexp", "options": "/.*xss.*/"},
+              "properties": [
+                {"id": "color", "value": {"fixedColor": "orange", "mode": "fixed"}}
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": 10,
+        "title": "False Negatives (Missed Attacks)",
+        "type": "timeseries",
+        "gridPos": {"x": 8, "y": 20, "w": 8, "h": 8},
+        "targets": [
+          {
+            "expr": "increase(waf_false_negatives_total[5m])",
+            "legendFormat": "{{category}}",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "drawStyle": "bars",
+              "fillOpacity": 80
+            },
+            "thresholds": {
+              "steps": [
+                {"value": 0, "color": "green"},
+                {"value": 1, "color": "red"}
+              ]
+            }
+          }
+        },
+        "alert": {
+          "name": "False Negatives Detected",
+          "message": "CRITICAL: WAF missed attacks!",
+          "conditions": [
+            {
+              "evaluator": {"type": "gt", "params": [0]},
+              "query": {"params": ["A", "5m", "now"]}
+            }
+          ]
+        }
+      },
+      {
+        "id": 11,
+        "title": "False Positive Rate by Category",
+        "type": "bargauge",
+        "gridPos": {"x": 16, "y": 20, "w": 8, "h": 8},
+        "targets": [
+          {
+            "expr": "waf_false_positive_rate * 100",
+            "legendFormat": "{{category}}",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "orientation": "horizontal",
+          "displayMode": "gradient",
+          "showUnfilled": true
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0,
+            "max": 10,
+            "thresholds": {
+              "steps": [
+                {"value": 0, "color": "green"},
+                {"value": 2, "color": "yellow"},
+                {"value": 5, "color": "orange"},
+                {"value": 10, "color": "red"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 12,
+        "title": "ML Prediction Results",
+        "type": "piechart",
+        "gridPos": {"x": 0, "y": 28, "w": 8, "h": 8},
+        "targets": [
+          {
+            "expr": "sum by(result) (increase(waf_ml_predictions_total[1h]))",
+            "legendFormat": "{{result}}",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "legend": {
+            "displayMode": "table",
+            "placement": "right",
+            "values": ["value", "percent"]
+          }
+        }
+      },
+      {
+        "id": 13,
+        "title": "Model Updates Timeline",
+        "type": "timeseries",
+        "gridPos": {"x": 8, "y": 28, "w": 8, "h": 8},
+        "targets": [
+          {
+            "expr": "increase(waf_model_updates_total[10m])",
+            "legendFormat": "{{trigger}} (success={{success}})",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "drawStyle": "bars",
+              "fillOpacity": 100
+            }
+          }
+        }
+      },
+      {
+        "id": 14,
+        "title": "Admin Feedback Activity",
+        "type": "timeseries",
+        "gridPos": {"x": 16, "y": 28, "w": 8, "h": 8},
+        "targets": [
+          {
+            "expr": "increase(waf_feedback_submissions_total[1h])",
+            "legendFormat": "{{type}} - {{category}}",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "drawStyle": "bars",
+              "fillOpacity": 80
+            }
+          }
+        }
+      }
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "model_type",
+        "type": "query",
+        "datasource": "Prometheus",
+        "query": "label_values(waf_ml_predictions_total, model_type)",
+        "multi": true,
+        "includeAll": true
+      },
+      {
+        "name": "category",
+        "type": "query",
+        "datasource": "Prometheus",
+        "query": "label_values(waf_ml_accuracy, category)",
+        "multi": true,
+        "includeAll": true
+      }
+    ]
+  },
+  "annotations": {
+    "list": [
+      {
+        "name": "Model Retraining",
+        "datasource": "Prometheus",
+        "expr": "changes(waf_model_updates_total{success='true'}[1m]) > 0",
+        "textFormat": "Model retrained: {{trigger}}",
+        "iconColor": "green"
+      },
+      {
+        "name": "False Positives",
+        "datasource": "Prometheus",
+        "expr": "changes(waf_false_positives_total[1m]) > 0",
+        "textFormat": "FP: {{category}}",
+        "iconColor": "yellow"
+      },
+      {
+        "name": "False Negatives",
+        "datasource": "Prometheus",
+        "expr": "changes(waf_false_negatives_total[1m]) > 0",
+        "textFormat": "FN (CRITICAL): {{category}}",
+        "iconColor": "red"
+      }
+    ]
+  }
+}

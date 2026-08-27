@@ -1,0 +1,117 @@
+# Prometheus Configuration for DECEPTICON WAF
+# Enterprise-grade monitoring setup
+
+global:
+  scrape_interval: 5s          # Scrape targets every 5 seconds (production: 15s)
+  evaluation_interval: 5s      # Evaluate rules every 5 seconds
+  scrape_timeout: 4s          # Timeout after 4 seconds
+
+  external_labels:
+    monitor: 'decepticon-waf'
+    environment: 'production'
+    cluster: 'waf-cluster-01'
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - 'alertmanager:9093'
+
+# Load rules once and periodically evaluate them
+rule_files:
+  - '/etc/prometheus/rules/*.yml'
+
+# Scrape configurations
+scrape_configs:
+  # WAF Metrics Exporter
+  - job_name: 'waf-metrics'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['waf:9090']
+        labels:
+          service: 'waf'
+          component: 'metrics-exporter'
+
+  # Standalone layered WAF (waf/server.py) — exposes Prometheus at /metrics on its own port
+  - job_name: 'standalone-waf'
+    metrics_path: '/metrics'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['host.docker.internal:8080']   # local run; use the WAF service host in compose
+        labels:
+          service: 'standalone-waf'
+          component: 'reverse-proxy'
+
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9091']
+        labels:
+          service: 'prometheus'
+
+  # Node Exporter (system metrics)
+  - job_name: 'node'
+    scrape_interval: 10s
+    static_configs:
+      - targets: ['node-exporter:9100']
+        labels:
+          service: 'node-exporter'
+          component: 'system'
+
+  # Redis Exporter
+  - job_name: 'redis'
+    scrape_interval: 10s
+    static_configs:
+      - targets: ['redis-exporter:9121']
+        labels:
+          service: 'redis'
+          component: 'cache'
+
+  # Container Advisor (cAdvisor) - Docker metrics
+  - job_name: 'cadvisor'
+    scrape_interval: 10s
+    static_configs:
+      - targets: ['cadvisor:8080']
+        labels:
+          service: 'cadvisor'
+          component: 'docker'
+
+  # Grafana metrics
+  - job_name: 'grafana'
+    scrape_interval: 15s
+    static_configs:
+      - targets: ['grafana:3000']
+        labels:
+          service: 'grafana'
+
+  # ML Model Performance (dedicated endpoint)
+  - job_name: 'ml-performance'
+    scrape_interval: 5s
+    metrics_path: '/ml/metrics'
+    static_configs:
+      - targets: ['waf:9090']
+        labels:
+          service: 'waf'
+          component: 'ml-engine'
+
+  # Anomaly Detection Timeline
+  - job_name: 'anomaly-timeline'
+    scrape_interval: 10s
+    metrics_path: '/anomaly/metrics'
+    static_configs:
+      - targets: ['waf:9090']
+        labels:
+          service: 'waf'
+          component: 'anomaly-detection'
+
+# Remote write (optional - for long-term storage)
+# remote_write:
+#   - url: 'http://victoriametrics:8428/api/v1/write'
+#     queue_config:
+#       max_samples_per_send: 10000
+#       capacity: 20000
+
+# Remote read (optional - for querying external storage)
+# remote_read:
+#   - url: 'http://victoriametrics:8428/api/v1/read'
