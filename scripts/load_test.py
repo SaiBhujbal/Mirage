@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-DECEPTICON WAF Load Testing
+MIRAGE WAF Load Testing
 Performance and stress testing for the WAF
 """
 import time
@@ -77,7 +77,7 @@ class LoadTestResult:
 
 
 class LoadTester:
-    """Load testing framework for DECEPTICON WAF"""
+    """Load testing framework for MIRAGE WAF"""
     
     # Test payloads
     ATTACK_PAYLOADS = [
@@ -285,7 +285,7 @@ class LoadTester:
 
 def run_stress_test():
     """Run escalating stress test"""
-    print("\n🔥 DECEPTICON WAF Stress Test")
+    print("\n🔥 MIRAGE WAF Stress Test")
     print("="*70)
     
     tester = LoadTester()
@@ -310,7 +310,7 @@ def run_stress_test():
 
 def run_sustained_test(duration: int = 60):
     """Run sustained load test"""
-    print(f"\n🔥 DECEPTICON WAF Sustained Load Test ({duration}s)")
+    print(f"\n🔥 MIRAGE WAF Sustained Load Test ({duration}s)")
     print("="*70)
     
     tester = LoadTester()
@@ -325,7 +325,7 @@ def run_sustained_test(duration: int = 60):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="DECEPTICON WAF Load Tester")
+    parser = argparse.ArgumentParser(description="MIRAGE WAF Load Tester")
     
     subparsers = parser.add_subparsers(dest="command", help="Test type")
     

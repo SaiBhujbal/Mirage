@@ -1,5 +1,5 @@
 """
-DECEPTICON WAF Middleware
+MIRAGE WAF Middleware
 ASGI/WSGI middleware for framework integration
 Drop-in protection for any Python web application
 """
@@ -41,17 +41,17 @@ class WAFConfig:
             self.skip_paths = ["/health", "/metrics", "/favicon.ico"]
 
 
-class DecepticonASGI:
+class MirageASGI:
     """
-    ASGI Middleware for DECEPTICON WAF
+    ASGI Middleware for MIRAGE WAF
     
     Usage with FastAPI:
         app = FastAPI()
-        app = DecepticonASGI(app)
+        app = MirageASGI(app)
     
     Usage with Starlette:
         app = Starlette()
-        app = DecepticonASGI(app)
+        app = MirageASGI(app)
     """
     
     def __init__(self, app, config: Optional[WAFConfig] = None):
@@ -196,17 +196,17 @@ class DecepticonASGI:
         })
 
 
-class DecepticonWSGI:
+class MirageWSGI:
     """
-    WSGI Middleware for DECEPTICON WAF
+    WSGI Middleware for MIRAGE WAF
     
     Usage with Flask:
         app = Flask(__name__)
-        app.wsgi_app = DecepticonWSGI(app.wsgi_app)
+        app.wsgi_app = MirageWSGI(app.wsgi_app)
     
     Usage with Django:
         # In wsgi.py
-        application = DecepticonWSGI(application)
+        application = MirageWSGI(application)
     """
     
     def __init__(self, app, config: Optional[WAFConfig] = None):
@@ -345,6 +345,6 @@ def protect_app(app, framework: str = "auto", **config_kwargs):
             framework = "wsgi"
     
     if framework == "asgi":
-        return DecepticonASGI(app, config)
+        return MirageASGI(app, config)
     else:
-        return DecepticonWSGI(app, config)
+        return MirageWSGI(app, config)

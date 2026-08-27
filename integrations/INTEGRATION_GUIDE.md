@@ -1,10 +1,10 @@
 > **Accuracy correction (2026):** Earlier revisions cited **99.84%** ML accuracy — a disproved synthetic-data figure. Measured performance is **97.43% accuracy / 0.44% FP on an offline test set**, and **4.99% false positives on independent CSIC-2010 benign traffic** (see LEGACY.md and ml/RESEARCH_DESIGN.md). ML runs shadow/high-precision by default; figures below are offline test metrics, not production.
 
-# DECEPTICON WAF - Open Source Integration Guide
+# MIRAGE WAF - Open Source Integration Guide
 
 ## Overview
 
-The DECEPTICON ML module can be integrated with **ANY open-source WAF** via RESTful API calls. This document provides integration examples for popular WAFs.
+The MIRAGE ML module can be integrated with **ANY open-source WAF** via RESTful API calls. This document provides integration examples for popular WAFs.
 
 ---
 
@@ -33,7 +33,7 @@ The DECEPTICON ML module can be integrated with **ANY open-source WAF** via REST
                          │
                          ▼
 ┌─────────────────────────────────────────────────────────────┐
-│              DECEPTICON ML Integration API                  │
+│              MIRAGE ML Integration API                  │
 │                  http://localhost:5000                      │
 │                                                             │
 │  Endpoints:                                                │
@@ -71,7 +71,7 @@ The DECEPTICON ML module can be integrated with **ANY open-source WAF** via REST
 ### 1. Start the ML API Server
 
 ```bash
-cd /path/to/decepticon-waf
+cd /path/to/mirage-waf
 python api/ml_integration_api.py
 ```
 
@@ -125,14 +125,14 @@ ModSecurity is the most popular open-source WAF. Integrate using Lua scripts.
 
 #### Method 1: Lua Hook (Recommended)
 
-**File: `/etc/modsecurity/decepticon_integration.lua`**
+**File: `/etc/modsecurity/mirage_integration.lua`**
 
 ```lua
--- DECEPTICON ML Integration for ModSecurity
+-- MIRAGE ML Integration for ModSecurity
 local http = require "resty.http"
 local cjson = require "cjson"
 
-function call_decepticon_ml(request_data)
+function call_mirage_ml(request_data)
     local httpc = http.new()
 
     -- Build request payload
@@ -146,7 +146,7 @@ function call_decepticon_ml(request_data)
         session_id = request_data.session_id or "unknown"
     })
 
-    -- Call DECEPTICON API
+    -- Call MIRAGE API
     local res, err = httpc:request_uri("http://localhost:5000/api/waf/analyze", {
         method = "POST",
         body = payload,
@@ -170,7 +170,7 @@ end
 
 -- ModSecurity hook
 function main(request_data)
-    local ml_result = call_decepticon_ml(request_data)
+    local ml_result = call_mirage_ml(request_data)
 
     -- Return action based on ML decision
     if ml_result.is_malicious then
@@ -195,16 +195,16 @@ SecRule REQUEST_URI "@unconditionalMatch" \
     phase:1,\
     nolog,\
     pass,\
-    exec:/etc/modsecurity/decepticon_integration.lua"
+    exec:/etc/modsecurity/mirage_integration.lua"
 ```
 
 #### Method 2: External Script (Alternative)
 
-**File: `/usr/local/bin/decepticon_check.sh`**
+**File: `/usr/local/bin/mirage_check.sh`**
 
 ```bash
 #!/bin/bash
-# Call DECEPTICON ML API
+# Call MIRAGE ML API
 
 REQUEST_METHOD="$1"
 REQUEST_URI="$2"
@@ -238,10 +238,10 @@ fi
 SecRule REQUEST_URI "@unconditionalMatch" \
     "id:2000,\
     phase:1,\
-    exec:/usr/local/bin/decepticon_check.sh %{REQUEST_METHOD} %{REQUEST_URI} %{QUERY_STRING} %{REMOTE_ADDR},\
+    exec:/usr/local/bin/mirage_check.sh %{REQUEST_METHOD} %{REQUEST_URI} %{QUERY_STRING} %{REMOTE_ADDR},\
     deny,\
     status:403,\
-    msg:'Blocked by DECEPTICON ML'"
+    msg:'Blocked by MIRAGE ML'"
 ```
 
 ---
@@ -250,14 +250,14 @@ SecRule REQUEST_URI "@unconditionalMatch" \
 
 NAXSI is a lightweight WAF for Nginx. Integrate using Nginx Lua module.
 
-**File: `/etc/nginx/conf.d/decepticon.conf`**
+**File: `/etc/nginx/conf.d/mirage.conf`**
 
 ```nginx
 http {
     # Lua integration
     lua_package_path "/etc/nginx/lua/?.lua;;";
 
-    upstream decepticon_api {
+    upstream mirage_api {
         server localhost:5000;
         keepalive 32;
     }
@@ -266,7 +266,7 @@ http {
         listen 80;
 
         location / {
-            # Call DECEPTICON ML before NAXSI rules
+            # Call MIRAGE ML before NAXSI rules
             access_by_lua_block {
                 local http = require "resty.http"
                 local cjson = require "cjson"
@@ -280,7 +280,7 @@ http {
                     source_ip = ngx.var.remote_addr
                 })
 
-                -- Call DECEPTICON API
+                -- Call MIRAGE API
                 local httpc = http.new()
                 local res, err = httpc:request_uri(
                     "http://localhost:5000/api/waf/analyze",
@@ -321,7 +321,7 @@ http {
 
 Shadow Daemon uses connectors. Create a custom connector.
 
-**File: `/usr/local/shadow/connectors/decepticon_connector.py`**
+**File: `/usr/local/shadow/connectors/mirage_connector.py`**
 
 ```python
 #!/usr/bin/env python3
@@ -329,8 +329,8 @@ import requests
 import json
 import sys
 
-def analyze_with_decepticon(request_data):
-    """Call DECEPTICON ML API"""
+def analyze_with_mirage(request_data):
+    """Call MIRAGE ML API"""
 
     api_url = "http://localhost:5000/api/waf/analyze"
 
@@ -371,7 +371,7 @@ if __name__ == "__main__":
     request_data = json.loads(sys.stdin.read())
 
     # Analyze
-    result = analyze_with_decepticon(request_data)
+    result = analyze_with_mirage(request_data)
 
     # Return result
     print(json.dumps(result))
@@ -380,9 +380,9 @@ if __name__ == "__main__":
 **Shadow Daemon Configuration:**
 
 ```ini
-[decepticon]
+[mirage]
 enabled = true
-connector = /usr/local/shadow/connectors/decepticon_connector.py
+connector = /usr/local/shadow/connectors/mirage_connector.py
 ```
 
 ---
@@ -391,7 +391,7 @@ connector = /usr/local/shadow/connectors/decepticon_connector.py
 
 Coraza is a modern WAF written in Go. Integrate using Go plugin.
 
-**File: `plugins/decepticon/decepticon.go`**
+**File: `plugins/mirage/mirage.go`**
 
 ```go
 package main
@@ -405,7 +405,7 @@ import (
     "github.com/corazawaf/coraza/v3"
 )
 
-type DecepticonRequest struct {
+type MirageRequest struct {
     Method    string            `json:"method"`
     Path      string            `json:"path"`
     Query     string            `json:"query"`
@@ -414,16 +414,16 @@ type DecepticonRequest struct {
     SourceIP  string            `json:"source_ip"`
 }
 
-type DecepticonResponse struct {
+type MirageResponse struct {
     IsMalicious       bool    `json:"is_malicious"`
     Confidence        float64 `json:"confidence"`
     Category          string  `json:"category"`
     RecommendedAction string  `json:"recommended_action"`
 }
 
-func AnalyzeWithDecepticon(tx coraza.Transaction) (*DecepticonResponse, error) {
+func AnalyzeWithMirage(tx coraza.Transaction) (*MirageResponse, error) {
     // Build request
-    req := DecepticonRequest{
+    req := MirageRequest{
         Method:   tx.Request().Method,
         Path:     tx.Request().URI,
         Query:    tx.Request().Query,
@@ -433,7 +433,7 @@ func AnalyzeWithDecepticon(tx coraza.Transaction) (*DecepticonResponse, error) {
 
     payload, _ := json.Marshal(req)
 
-    // Call DECEPTICON API
+    // Call MIRAGE API
     client := &http.Client{Timeout: 100 * time.Millisecond}
     resp, err := client.Post(
         "http://localhost:5000/api/waf/analyze",
@@ -443,19 +443,19 @@ func AnalyzeWithDecepticon(tx coraza.Transaction) (*DecepticonResponse, error) {
 
     if err != nil {
         // Fail open
-        return &DecepticonResponse{IsMalicious: false}, nil
+        return &MirageResponse{IsMalicious: false}, nil
     }
     defer resp.Body.Close()
 
-    var result DecepticonResponse
+    var result MirageResponse
     json.NewDecoder(resp.Body).Decode(&result)
 
     return &result, nil
 }
 
 // Coraza plugin hook
-func DecepticonPlugin(tx coraza.Transaction) error {
-    result, err := AnalyzeWithDecepticon(tx)
+func MiragePlugin(tx coraza.Transaction) error {
+    result, err := AnalyzeWithMirage(tx)
 
     if err != nil {
         return nil // Fail open
@@ -465,7 +465,7 @@ func DecepticonPlugin(tx coraza.Transaction) error {
         tx.Interrupt(&coraza.Interruption{
             Status: 403,
             RuleID: 9999,
-            Data:   "Blocked by DECEPTICON ML: " + result.Category,
+            Data:   "Blocked by MIRAGE ML: " + result.Category,
         })
     }
 
@@ -484,8 +484,8 @@ For custom WAFs, simply make HTTP POST requests.
 ```python
 import requests
 
-def check_with_decepticon(method, path, query, headers, source_ip):
-    """Check request with DECEPTICON ML"""
+def check_with_mirage(method, path, query, headers, source_ip):
+    """Check request with MIRAGE ML"""
 
     response = requests.post(
         'http://localhost:5000/api/waf/analyze',
@@ -507,7 +507,7 @@ def check_with_decepticon(method, path, query, headers, source_ip):
         return 'ALLOW', None
 
 # Usage in WAF
-action, category = check_with_decepticon(
+action, category = check_with_mirage(
     method='GET',
     path='/api/users',
     query='?id=1 OR 1=1--',
@@ -524,7 +524,7 @@ if action == 'BLOCK':
 ```javascript
 const axios = require('axios');
 
-async function checkWithDecepticon(requestData) {
+async function checkWithMirage(requestData) {
     try {
         const response = await axios.post(
             'http://localhost:5000/api/waf/analyze',
@@ -553,7 +553,7 @@ async function checkWithDecepticon(requestData) {
 
 // Usage in Express.js middleware
 app.use(async (req, res, next) => {
-    const result = await checkWithDecepticon({
+    const result = await checkWithMirage({
         method: req.method,
         path: req.path,
         query: req.query,
@@ -658,7 +658,7 @@ curl -X POST http://localhost:5000/api/v1/train \
 version: '3.8'
 
 services:
-  decepticon-ml-api:
+  mirage-ml-api:
     build: .
     ports:
       - "5000:5000"
@@ -684,17 +684,17 @@ services:
 ### Load Balancing (Multiple Instances)
 
 ```nginx
-upstream decepticon_ml {
+upstream mirage_ml {
     least_conn;
-    server decepticon-ml-1:5000 max_fails=3 fail_timeout=30s;
-    server decepticon-ml-2:5000 max_fails=3 fail_timeout=30s;
-    server decepticon-ml-3:5000 max_fails=3 fail_timeout=30s;
+    server mirage-ml-1:5000 max_fails=3 fail_timeout=30s;
+    server mirage-ml-2:5000 max_fails=3 fail_timeout=30s;
+    server mirage-ml-3:5000 max_fails=3 fail_timeout=30s;
     keepalive 32;
 }
 
 server {
     location /api/v1/ {
-        proxy_pass http://decepticon_ml;
+        proxy_pass http://mirage_ml;
         proxy_next_upstream error timeout;
         proxy_connect_timeout 100ms;
         proxy_send_timeout 100ms;
@@ -711,9 +711,9 @@ server {
 
 ```bash
 #!/bin/bash
-# Test DECEPTICON integration
+# Test MIRAGE integration
 
-echo "Testing DECEPTICON ML API Integration..."
+echo "Testing MIRAGE ML API Integration..."
 
 # 1. Health check
 echo -n "Health check: "
@@ -747,10 +747,10 @@ echo "✅ Integration tests complete!"
 curl http://localhost:5000/api/v1/health
 
 # Check logs
-tail -f /var/log/decepticon-ml-api.log
+tail -f /var/log/mirage-ml-api.log
 
 # Restart API
-systemctl restart decepticon-ml-api
+systemctl restart mirage-ml-api
 ```
 
 ### High Latency
@@ -782,7 +782,7 @@ curl -X POST http://localhost:5000/api/v1/train \
 
 ## Summary
 
-✅ **DECEPTICON ML module is fully compatible with open-source WAFs**
+✅ **MIRAGE ML module is fully compatible with open-source WAFs**
 
 **Integration Methods:**
 1. **RESTful API** (Primary) - HTTP POST requests

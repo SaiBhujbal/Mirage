@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-DECEPTICON Real Payload Loader
+MIRAGE Real Payload Loader
 ==============================
 Naval SWAVLAMBAN 2025 Challenge 3
 
@@ -12,7 +12,7 @@ Loads REAL attack payloads from security research repositories:
 
 NO SYNTHETIC DATA - Only real-world payloads used by actual pentesters.
 
-Author: DECEPTICON Team
+Author: MIRAGE Team
 Date: December 2025
 """
 
@@ -29,7 +29,7 @@ from dataclasses import dataclass, field
 import numpy as np
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger("decepticon.real_payloads")
+logger = logging.getLogger("mirage.real_payloads")
 
 
 # ============================================================================
@@ -1326,7 +1326,7 @@ class EmbeddedPayloads:
 # ============================================================================
 
 if __name__ == '__main__':
-    print("DECEPTICON Real Payload Loader")
+    print("MIRAGE Real Payload Loader")
     print("=" * 60)
     
     loader = RealPayloadLoader()

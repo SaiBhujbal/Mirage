@@ -1,6 +1,6 @@
 > **Accuracy correction (2026):** Earlier revisions cited **99.84%** ML accuracy — a disproved synthetic-data figure. Measured performance is **97.43% accuracy / 0.44% FP on an offline test set**, and **4.99% false positives on independent CSIC-2010 benign traffic** (see LEGACY.md and ml/RESEARCH_DESIGN.md). ML runs shadow/high-precision by default; figures below are offline test metrics, not production.
 
-# DECEPTICON ML-WAF: Technical Architecture & Multi-Layer Defense
+# MIRAGE ML-WAF: Technical Architecture & Multi-Layer Defense
 
 **Technical Deep-Dive: ModSecurity Integration, ML Models, and Zero-Day Detection**
 
@@ -8,9 +8,9 @@
 
 ## Executive Summary
 
-This document presents a comprehensive technical analysis of the DECEPTICON ML-WAF system, an advanced web application firewall that combines traditional pattern-based security with machine learning capabilities. The system integrates seamlessly with ModSecurity while providing a **five-layer defense architecture** that addresses the fundamental limitations of conventional WAF solutions.
+This document presents a comprehensive technical analysis of the MIRAGE ML-WAF system, an advanced web application firewall that combines traditional pattern-based security with machine learning capabilities. The system integrates seamlessly with ModSecurity while providing a **five-layer defense architecture** that addresses the fundamental limitations of conventional WAF solutions.
 
-Traditional web application firewalls rely exclusively on signature-based detection, which leaves them vulnerable to attack variants, encoding techniques, and zero-day exploits. DECEPTICON ML-WAF solves these challenges through a defense-in-depth strategy with **five specialized layers**: pattern matching, supervised ML classification, behavioral analysis, anomaly detection, and zero-day detection. This multi-layered approach achieves 99.9% detection accuracy while maintaining sub-5ms latency and near-zero false positive rates.
+Traditional web application firewalls rely exclusively on signature-based detection, which leaves them vulnerable to attack variants, encoding techniques, and zero-day exploits. MIRAGE ML-WAF solves these challenges through a defense-in-depth strategy with **five specialized layers**: pattern matching, supervised ML classification, behavioral analysis, anomaly detection, and zero-day detection. This multi-layered approach achieves 99.9% detection accuracy while maintaining sub-5ms latency and near-zero false positive rates.
 
 The following sections provide detailed evidence for each architectural decision, demonstrating why machine learning models are essential, why multiple defensive layers are required, and how the system detects attacks that have never been seen before. All claims are substantiated with benchmark results from production-scale testing.
 
@@ -20,9 +20,9 @@ The following sections provide detailed evidence for each architectural decision
 
 ### 1.1 Integration Architecture
 
-The DECEPTICON ML-WAF operates as an intelligent enhancement layer that integrates with existing ModSecurity deployments. Rather than replacing traditional WAF infrastructure, it augments it with machine learning capabilities through a lightweight API integration.
+The MIRAGE ML-WAF operates as an intelligent enhancement layer that integrates with existing ModSecurity deployments. Rather than replacing traditional WAF infrastructure, it augments it with machine learning capabilities through a lightweight API integration.
 
-The architecture follows a proxy pattern where ModSecurity continues to perform initial traffic filtering using its Core Rule Set (CRS), but delegates uncertain or complex classification decisions to the DECEPTICON ML engine via Lua hooks. This design preserves the low-latency benefits of pattern matching while adding the superior accuracy of machine learning for edge cases.
+The architecture follows a proxy pattern where ModSecurity continues to perform initial traffic filtering using its Core Rule Set (CRS), but delegates uncertain or complex classification decisions to the MIRAGE ML engine via Lua hooks. This design preserves the low-latency benefits of pattern matching while adding the superior accuracy of machine learning for edge cases.
 
 The system processes each HTTP request through **five distinct defensive layers**, with each layer specialized for different threat categories. This pipeline architecture ensures that simple attacks are blocked quickly by pattern matching, while sophisticated or novel attacks receive deeper analysis through machine learning, behavioral analysis, anomaly detection, and zero-day detection algorithms.
 
@@ -38,7 +38,7 @@ graph TB
         LuaHook[Lua Integration Hook]
     end
 
-    subgraph "DECEPTICON ML-WAF - 5 Layer Defense"
+    subgraph "MIRAGE ML-WAF - 5 Layer Defense"
         direction TB
         L1[Layer 1: Pattern Engine<br/>185+ Regex Rules]
         L2[Layer 2: ML Classifier<br/>XGBoost + ONNX]
@@ -76,7 +76,7 @@ graph TB
 
 ### 1.2 Request Flow Sequence
 
-The following sequence diagram illustrates the complete lifecycle of an HTTP request as it flows through the integrated ModSecurity and DECEPTICON system. Understanding this flow is critical for operations teams, as it reveals the decision points where traffic is either blocked, challenged, or forwarded to backend services.
+The following sequence diagram illustrates the complete lifecycle of an HTTP request as it flows through the integrated ModSecurity and MIRAGE system. Understanding this flow is critical for operations teams, as it reveals the decision points where traffic is either blocked, challenged, or forwarded to backend services.
 
 Notice how the architecture implements an "early exit" pattern: if any layer definitively identifies malicious traffic, the request is immediately blocked without invoking subsequent layers. This design minimizes computational overhead for known attacks while reserving expensive ML inference for ambiguous cases. The numbered sequence shows the exact API call chain, latency contributors, and fallback logic.
 
@@ -168,7 +168,7 @@ sequenceDiagram
 
 ### 2.1 Defense-in-Depth Strategy
 
-The defense-in-depth approach is fundamental to DECEPTICON's effectiveness. Single-layer security systems create a binary outcome: if an attack evades the one defensive mechanism, the entire system is compromised. By implementing **five specialized layers**, DECEPTICON ensures that attackers must defeat multiple independent detection mechanisms simultaneously.
+The defense-in-depth approach is fundamental to MIRAGE's effectiveness. Single-layer security systems create a binary outcome: if an attack evades the one defensive mechanism, the entire system is compromised. By implementing **five specialized layers**, MIRAGE ensures that attackers must defeat multiple independent detection mechanisms simultaneously.
 
 Each layer in the pipeline operates on different principles and detection methodologies:
 
@@ -337,7 +337,7 @@ flowchart TB
 
 Feature engineering is the most critical component of the ML pipeline because machine learning models cannot directly process raw HTTP requests. The system must extract numerical features that capture the semantic characteristics of malicious traffic while remaining robust to evasion techniques.
 
-DECEPTICON employs a 50-dimensional feature vector derived from four complementary feature groups. Request features capture structural properties like URL length and parameter count. Pattern features identify attack-specific indicators like SQL keywords or JavaScript event handlers. Statistical features measure information-theoretic properties like Shannon entropy and character distribution. Behavioral features track temporal patterns like request frequency and session consistency.
+MIRAGE employs a 50-dimensional feature vector derived from four complementary feature groups. Request features capture structural properties like URL length and parameter count. Pattern features identify attack-specific indicators like SQL keywords or JavaScript event handlers. Statistical features measure information-theoretic properties like Shannon entropy and character distribution. Behavioral features track temporal patterns like request frequency and session consistency.
 
 This diverse feature set ensures the model recognizes attacks through multiple independent signals. For example, a Base64-encoded SQL injection might evade pattern matching, but it still exhibits high entropy, unusual character distribution, and SQL keyword presence after decoding—all of which trigger ML detection. The feature extraction process is deterministic and stateless, meaning it cannot be influenced by previous requests or external state.
 
@@ -503,7 +503,7 @@ graph LR
 
 Anomaly detection addresses this problem by inverting the detection logic. Instead of learning what attacks look like, the system learns what normal, benign traffic looks like. Any request that deviates significantly from this baseline is flagged as suspicious, regardless of whether it matches known attack patterns. This approach is particularly effective for zero-day exploits, which by definition have never been seen before but still exhibit statistical properties that differ from legitimate user behavior.
 
-DECEPTICON implements anomaly detection using Isolation Forest, an algorithm specifically designed for high-dimensional outlier detection. The model is trained exclusively on clean traffic to establish behavioral baselines. During inference, it measures how "isolated" each request is from normal patterns—novel attacks that introduce unusual character distributions, abnormal request structures, or suspicious parameter combinations score high on the anomaly scale even if they don't match known signatures.
+MIRAGE implements anomaly detection using Isolation Forest, an algorithm specifically designed for high-dimensional outlier detection. The model is trained exclusively on clean traffic to establish behavioral baselines. During inference, it measures how "isolated" each request is from normal patterns—novel attacks that introduce unusual character distributions, abnormal request structures, or suspicious parameter combinations score high on the anomaly scale even if they don't match known signatures.
 
 **Evidence**: Isolation Forest algorithm detects anomalous request patterns.
 
@@ -689,7 +689,7 @@ The table below presents empirical evidence from production testing with 10,000 
 
 ### 5.3 Layer Interaction Matrix
 
-**Decision Flow Logic**: The interaction matrix below demonstrates how layers collaborate during request processing. Unlike simple sequential pipelines where every request passes through all layers, DECEPTICON implements intelligent short-circuiting to optimize performance.
+**Decision Flow Logic**: The interaction matrix below demonstrates how layers collaborate during request processing. Unlike simple sequential pipelines where every request passes through all layers, MIRAGE implements intelligent short-circuiting to optimize performance.
 
 High-confidence detections at early layers (e.g., Layer 1 pattern match with 100% certainty) trigger immediate blocking without consulting subsequent layers. This "fast path" ensures that simple known attacks incur minimal latency overhead. Conversely, low-confidence or ambiguous results trigger deeper analysis through additional layers.
 
@@ -743,7 +743,7 @@ graph TB
 
 ### 6.1 The Continuous Improvement Problem
 
-**Challenge**: Static ML models degrade over time as attack techniques evolve. A model trained in January 2025 will miss novel attack variants developed in June 2025. Traditional WAFs address this through manual rule updates, which are slow, error-prone, and require security expertise. DECEPTICON solves this through automated adaptive learning and continuous retraining.
+**Challenge**: Static ML models degrade over time as attack techniques evolve. A model trained in January 2025 will miss novel attack variants developed in June 2025. Traditional WAFs address this through manual rule updates, which are slow, error-prone, and require security expertise. MIRAGE solves this through automated adaptive learning and continuous retraining.
 
 The system implements a closed-loop feedback mechanism where production detections continuously improve model accuracy. When Layer 4 (anomaly detection) or Layer 5 (zero-day detection) catches attacks that Layer 2 (ML classifier) missed, the system automatically captures these samples, clusters similar patterns, and triggers retraining when sufficient new data accumulates.
 
@@ -1083,7 +1083,7 @@ models/
 sequenceDiagram
     autonumber
     participant Attacker
-    participant WAF as DECEPTICON WAF
+    participant WAF as MIRAGE WAF
     participant L2 as Layer 2: ML
     participant L3 as Layer 3: Anomaly
     participant Adaptive as Adaptive Learner
@@ -1167,7 +1167,7 @@ These dynamic rules are:
 
 ### 6.7 Bypass Mitigation and Fallback Defense
 
-**The Critical Question**: What happens when attackers bypass one or more detection layers? Traditional security systems fail catastrophically when a single defensive mechanism is defeated. DECEPTICON implements multiple fallback defense mechanisms that activate when primary layers are bypassed.
+**The Critical Question**: What happens when attackers bypass one or more detection layers? Traditional security systems fail catastrophically when a single defensive mechanism is defeated. MIRAGE implements multiple fallback defense mechanisms that activate when primary layers are bypassed.
 
 The defense-in-depth architecture ensures that defeating Layer 1 (Pattern), Layer 2 (ML), or even Layer 3 (Anomaly Detection) does not result in successful compromise. The system employs five independent fallback mechanisms that operate on different principles: behavioral rate limiting, IP reputation scoring, session-based risk accumulation, honeypot engagement, and adaptive learning feedback loops.
 
@@ -1463,11 +1463,11 @@ gantt
 
 ### 6.2 Accuracy vs Latency Tradeoff
 
-**Engineering Tradeoffs**: Security systems exist in a three-dimensional optimization space: accuracy, latency, and operational cost. Traditional WAFs optimize for latency at the expense of accuracy. Deep learning systems optimize for accuracy at the expense of latency. DECEPTICON's architecture targets the optimal balance point in the "Ideal Zone" where both metrics are acceptable.
+**Engineering Tradeoffs**: Security systems exist in a three-dimensional optimization space: accuracy, latency, and operational cost. Traditional WAFs optimize for latency at the expense of accuracy. Deep learning systems optimize for accuracy at the expense of latency. MIRAGE's architecture targets the optimal balance point in the "Ideal Zone" where both metrics are acceptable.
 
-The quadrant chart positions different WAF architectures based on production benchmarks. Traditional pattern-based WAFs achieve low latency (0.25 on the normalized scale) but poor accuracy (0.40). Pure ML systems using Python inference achieve high accuracy (0.85) but suffer from high latency (0.70). DECEPTICON with ONNX optimization achieves both low latency (0.35) and high accuracy (0.90), placing it in the top-left "Ideal Zone."
+The quadrant chart positions different WAF architectures based on production benchmarks. Traditional pattern-based WAFs achieve low latency (0.25 on the normalized scale) but poor accuracy (0.40). Pure ML systems using Python inference achieve high accuracy (0.85) but suffer from high latency (0.70). MIRAGE with ONNX optimization achieves both low latency (0.35) and high accuracy (0.90), placing it in the top-left "Ideal Zone."
 
-The ModSecurity + DECEPTICON integrated deployment adds a small latency overhead (0.40) due to the Lua hook and API call, but achieves the highest accuracy (0.95) by combining both systems' strengths. This represents the recommended production configuration where security requirements justify the minor performance cost.
+The ModSecurity + MIRAGE integrated deployment adds a small latency overhead (0.40) due to the Lua hook and API call, but achieves the highest accuracy (0.95) by combining both systems' strengths. This represents the recommended production configuration where security requirements justify the minor performance cost.
 
 ```mermaid
 quadrantChart
@@ -1481,8 +1481,8 @@ quadrantChart
 
     Traditional WAF: [0.25, 0.40]
     ML-WAF (Python): [0.70, 0.85]
-    DECEPTICON (ONNX): [0.35, 0.90]
-    ModSec + DECEPTICON: [0.40, 0.95]
+    MIRAGE (ONNX): [0.35, 0.90]
+    ModSec + MIRAGE: [0.40, 0.95]
 ```
 
 ---
@@ -1491,7 +1491,7 @@ quadrantChart
 
 ### 7.1 Key Technical Claims & Evidence
 
-The DECEPTICON ML-WAF architecture represents a fundamental advancement in web application security by addressing the core limitations of both traditional pattern-based systems and ML-only approaches. The following table summarizes the key technical claims made throughout this document, along with empirical evidence from production-scale testing.
+The MIRAGE ML-WAF architecture represents a fundamental advancement in web application security by addressing the core limitations of both traditional pattern-based systems and ML-only approaches. The following table summarizes the key technical claims made throughout this document, along with empirical evidence from production-scale testing.
 
 Each claim has been validated through rigorous benchmarking against real-world attack datasets, not synthetic test data. The testing methodology involved 10,000 confirmed attacks from penetration testing logs, 1,000 novel zero-day payloads created by security researchers, and 50,000 benign requests from production traffic captures. All metrics represent P95 performance under concurrent load, not idealized single-request scenarios.
 
@@ -1507,7 +1507,7 @@ Each claim has been validated through rigorous benchmarking against real-world a
 
 ### 7.2 System Benefits
 
-The mindmap below provides a holistic view of DECEPTICON's value proposition across four key dimensions: security effectiveness, performance characteristics, integration capabilities, and operational features.
+The mindmap below provides a holistic view of MIRAGE's value proposition across four key dimensions: security effectiveness, performance characteristics, integration capabilities, and operational features.
 
 **Security**: The system achieves near-perfect detection accuracy (99.9%) across 16 distinct attack categories while maintaining industry-leading zero-day detection (87%). This multi-class classification enables granular response policies rather than binary block/allow decisions.
 
@@ -1519,7 +1519,7 @@ The mindmap below provides a holistic view of DECEPTICON's value proposition acr
 
 ```mermaid
 mindmap
-  root((DECEPTICON<br/>ML-WAF))
+  root((MIRAGE<br/>ML-WAF))
     Security
       99.9% Detection Accuracy
       Zero-Day Protection 87%
@@ -1568,5 +1568,5 @@ The following analysis explains why removing any single layer would significantl
 
 **Document Version**: 1.0
 **Last Updated**: January 2026
-**Architecture**: ModSecurity + DECEPTICON ML-WAF
+**Architecture**: ModSecurity + MIRAGE ML-WAF
 **Pages**: 3 (optimized for technical review)

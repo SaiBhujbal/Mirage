@@ -1,5 +1,5 @@
 """
-DECEPTICON Secure API Middleware
+MIRAGE Secure API Middleware
 Handles authentication, TLS enforcement, request size limits, MFA, and secure error responses
 """
 import time
@@ -37,7 +37,7 @@ try:
 except ImportError:
     SETTINGS_AVAILABLE = False
 
-logger = logging.getLogger("decepticon.api.security")
+logger = logging.getLogger("mirage.api.security")
 
 
 # ============================================================================

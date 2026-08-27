@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Prometheus Metrics Exporter for DECEPTICON WAF
+Prometheus Metrics Exporter for MIRAGE WAF
 Enterprise-grade metrics collection and export
 """
 
@@ -496,7 +496,7 @@ if __name__ == "__main__":
     exporter = get_exporter(port=9090)
     exporter.start_server()
 
-    print("\n=== DECEPTICON WAF Prometheus Exporter ===")
+    print("\n=== MIRAGE WAF Prometheus Exporter ===")
     print(f"Metrics endpoint: http://localhost:9090/metrics")
     print("\nAvailable metrics:")
     print("  - waf_requests_total")

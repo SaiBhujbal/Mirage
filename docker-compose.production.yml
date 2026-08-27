@@ -1,5 +1,5 @@
 # =============================================
-# DECEPTICON ML-WAF Docker Compose - PRODUCTION
+# MIRAGE ML-WAF Docker Compose - PRODUCTION
 # =============================================
 # This is the SECURE production configuration
 #
@@ -17,7 +17,7 @@
 # python -c "
 # import secrets, hashlib
 # admin_key = secrets.token_urlsafe(32)
-# print(f'DECEPTICON_ADMIN_KEY_HASH={hashlib.sha256(admin_key.encode()).hexdigest()}')
+# print(f'MIRAGE_ADMIN_KEY_HASH={hashlib.sha256(admin_key.encode()).hexdigest()}')
 # print(f'REDIS_PASSWORD={secrets.token_urlsafe(32)}')
 # print(f'SESSION_ENCRYPTION_KEY={secrets.token_hex(32)}')
 # print(f'MODEL_SIGNING_KEY={secrets.token_hex(32)}')
@@ -40,8 +40,8 @@ services:
       dockerfile: Dockerfile
       args:
         BUILDKIT_INLINE_CACHE: 1
-    image: decepticon-waf:production
-    container_name: decepticon-waf-prod
+    image: mirage-waf:production
+    container_name: mirage-waf-prod
     
     # SECURITY: Only expose necessary ports
     ports:
@@ -82,7 +82,7 @@ services:
       - REQUIRE_API_AUTH=true
       
       # SECURITY: Admin key (hash only, NEVER the actual key!)
-      - DECEPTICON_ADMIN_KEY_HASH=${DECEPTICON_ADMIN_KEY_HASH}
+      - MIRAGE_ADMIN_KEY_HASH=${MIRAGE_ADMIN_KEY_HASH}
       
       # SECURITY: Model signing key
       - MODEL_SIGNING_KEY=${MODEL_SIGNING_KEY}
@@ -157,7 +157,7 @@ services:
   # =========================================
   redis:
     image: redis:7-alpine
-    container_name: decepticon-redis-prod
+    container_name: mirage-redis-prod
     
     # SECURITY: No external port exposure!
     # ports:
@@ -216,7 +216,7 @@ services:
   # =========================================
   prometheus:
     image: prom/prometheus:latest
-    container_name: decepticon-prometheus-prod
+    container_name: mirage-prometheus-prod
 
     # SECURITY: Internal only!
     # ports:
@@ -262,7 +262,7 @@ services:
   # =========================================
   grafana:
     image: grafana/grafana:latest
-    container_name: decepticon-grafana-prod
+    container_name: mirage-grafana-prod
 
     ports:
       - "3000:3000"  # Dashboard access

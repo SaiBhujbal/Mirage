@@ -1,5 +1,5 @@
 # =============================================
-# DECEPTICON ML-WAF Docker Compose - DEVELOPMENT
+# MIRAGE ML-WAF Docker Compose - DEVELOPMENT
 # =============================================
 # For local development and video demonstrations
 # Uses relaxed security settings for ease of use
@@ -14,7 +14,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: decepticon-waf
+    container_name: mirage-waf
     ports:
       - "8080:8080"
       - "127.0.0.1:9090:9090"  # Metrics
@@ -69,7 +69,7 @@ services:
   # SECURITY: Password protected, no external access by default
   redis:
     image: redis:7-alpine
-    container_name: decepticon-redis
+    container_name: mirage-redis
     # SECURITY: Remove external port exposure in production
     # ports:
     #   - "6379:6379"
@@ -93,7 +93,7 @@ services:
   # Prometheus for metrics collection
   prometheus:
     image: prom/prometheus:latest
-    container_name: decepticon-prometheus
+    container_name: mirage-prometheus
     # SECURITY: Internal only in production
     ports:
       - "127.0.0.1:9091:9090"
@@ -111,7 +111,7 @@ services:
   # Grafana for dashboards
   grafana:
     image: grafana/grafana:latest
-    container_name: decepticon-grafana
+    container_name: mirage-grafana
     ports:
       - "3000:3000"
     environment:
@@ -135,7 +135,7 @@ services:
   # Log aggregation with Loki (optional)
   loki:
     image: grafana/loki:latest
-    container_name: decepticon-loki
+    container_name: mirage-loki
     # SECURITY: Internal only
     # ports:
     #   - "3100:3100"

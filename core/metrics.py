@@ -1,5 +1,5 @@
 """
-DECEPTICON WAF Prometheus Metrics Exporter
+MIRAGE WAF Prometheus Metrics Exporter
 Exports WAF metrics in Prometheus format
 """
 import time
@@ -117,7 +117,7 @@ class MetricsCollector:
         )
         self.prom_info.info({
             'version': '1.0.0',
-            'name': 'DECEPTICON'
+            'name': 'MIRAGE'
         })
     
     def record_request(self, action: str, latency_ms: float, 
@@ -269,7 +269,7 @@ def create_metrics_app():
     """Create FastAPI app for metrics endpoint"""
     from fastapi import FastAPI, Response
     
-    app = FastAPI(title="DECEPTICON Metrics")
+    app = FastAPI(title="MIRAGE Metrics")
     
     @app.get("/metrics")
     async def metrics():

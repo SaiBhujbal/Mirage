@@ -1,5 +1,5 @@
 """
-DECEPTICON Core Data Models
+MIRAGE Core Data Models
 Optimized for minimal memory allocation and fast serialization
 """
 from dataclasses import dataclass, field

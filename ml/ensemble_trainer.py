@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-DECEPTICON Ensemble ML Training Pipeline
+MIRAGE Ensemble ML Training Pipeline
 =========================================
 Naval SWAVLAMBAN 2025 Challenge 3 - Adaptive Anomaly Detection
 
@@ -12,7 +12,7 @@ This module implements:
 
 All models are exported to ONNX format for secure inference (no pickle RCE).
 
-Author: DECEPTICON Team
+Author: MIRAGE Team
 Date: December 2025
 """
 
@@ -84,7 +84,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from ml.feature_extraction import FeatureExtractor
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("decepticon.ml.ensemble_trainer")
+logger = logging.getLogger("mirage.ml.ensemble_trainer")
 
 
 # ============================================================================
@@ -1419,7 +1419,7 @@ def main():
     """Main training entry point"""
     import argparse
     
-    parser = argparse.ArgumentParser(description='DECEPTICON Ensemble ML Trainer')
+    parser = argparse.ArgumentParser(description='MIRAGE Ensemble ML Trainer')
     parser.add_argument('--samples', type=int, default=1000,
                         help='Samples per category (default: 1000)')
     parser.add_argument('--no-augment', action='store_true',
@@ -1434,7 +1434,7 @@ def main():
     print("""
     ╔═══════════════════════════════════════════════════════════════╗
     ║                                                               ║
-    ║     DECEPTICON ML Training Pipeline                          ║
+    ║     MIRAGE ML Training Pipeline                          ║
     ║     Naval SWAVLAMBAN 2025 - Challenge 3                      ║
     ║                                                               ║
     ╚═══════════════════════════════════════════════════════════════╝

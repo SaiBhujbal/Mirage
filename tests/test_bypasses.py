@@ -1,5 +1,5 @@
 """
-DECEPTICON WAF Bypass Test Suite
+MIRAGE WAF Bypass Test Suite
 Tests for encoding bypasses, ML evasion, and honeypot detection
 
 Run with: pytest tests/test_bypasses.py -v

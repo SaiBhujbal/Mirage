@@ -89,4 +89,4 @@ jobs:
         with:
           context: .
           push: false
-          tags: decepticon-waf:ci
+          tags: mirage-waf:ci

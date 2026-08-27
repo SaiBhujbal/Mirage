@@ -1,5 +1,5 @@
 """
-DECEPTICON Fast Pattern Matching Engine
+MIRAGE Fast Pattern Matching Engine
 Target: < 0.5ms for all pattern checks combined
 
 Uses:

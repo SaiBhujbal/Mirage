@@ -1,5 +1,5 @@
 """
-DECEPTICON Secure API Endpoints
+MIRAGE Secure API Endpoints
 FIXES:
 - IDOR on session endpoints (CRITICAL)
 - Missing authentication on sensitive endpoints (CRITICAL)
@@ -42,7 +42,7 @@ except ImportError as e:
     SESSION_SECURITY_AVAILABLE = False
     print(f"Warning: Session security not available: {e}")
 
-logger = logging.getLogger("decepticon.api.secure_endpoints")
+logger = logging.getLogger("mirage.api.secure_endpoints")
 
 # API Router
 router = APIRouter(prefix="/api/waf", tags=["WAF"])
@@ -762,7 +762,7 @@ async def export_rules_secure(
             content=rules,
             media_type="text/plain",
             headers={
-                "Content-Disposition": "attachment; filename=decepticon_rules.conf"
+                "Content-Disposition": "attachment; filename=mirage_rules.conf"
             },
         )
     except Exception as e:

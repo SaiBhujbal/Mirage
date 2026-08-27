@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-DECEPTICON WAF - Automated CVE Virtual Patcher
+MIRAGE WAF - Automated CVE Virtual Patcher
 Periodically checks for newly published CVEs, analyzes them, and automatically
 generates and installs dynamic rules in the WAF pattern engine.
 """
@@ -14,7 +14,7 @@ from typing import Dict, List, Optional
 from dataclasses import dataclass
 from core.pattern_engine import PatternRule, pattern_engine
 
-logger = logging.getLogger("decepticon.cve_patcher")
+logger = logging.getLogger("mirage.cve_patcher")
 
 @dataclass
 class CVESignature:

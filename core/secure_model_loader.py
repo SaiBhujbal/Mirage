@@ -1,5 +1,5 @@
 """
-DECEPTICON Secure Model Loader
+MIRAGE Secure Model Loader
 FIXES: Remote Code Execution via Pickle Deserialization (CRITICAL)
 
 NEVER use pickle.load() on untrusted data!
@@ -15,7 +15,7 @@ from typing import Dict, Any, Optional, Tuple
 from pathlib import Path
 import numpy as np
 
-logger = logging.getLogger("decepticon.security.model_loader")
+logger = logging.getLogger("mirage.security.model_loader")
 
 class SecurityError(Exception):
     """Security-related error"""

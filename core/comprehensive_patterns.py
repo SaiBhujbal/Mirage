@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-DECEPTICON Comprehensive Attack Patterns
+MIRAGE Comprehensive Attack Patterns
 ========================================
 Naval SWAVLAMBAN 2025 Challenge 3
 
@@ -10,7 +10,7 @@ Complete coverage of ALL modern attack vectors:
 - Cloud-specific attacks
 - Advanced evasion techniques
 
-Author: DECEPTICON Team (Red Team Perspective)
+Author: MIRAGE Team (Red Team Perspective)
 Date: December 2025
 Security Review: Penetration Tested
 """
@@ -622,7 +622,7 @@ def get_total_pattern_count() -> int:
 # ============================================================================
 
 if __name__ == '__main__':
-    print("DECEPTICON Comprehensive Attack Patterns")
+    print("MIRAGE Comprehensive Attack Patterns")
     print("=" * 60)
     
     counts = get_pattern_count()

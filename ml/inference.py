@@ -255,7 +255,7 @@ class MLInferenceEngine:
         # Look for models in common locations
         search_paths = [
             "./models",
-            "/home/claude/decepticon/models",
+            "/home/claude/mirage/models",
             os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/models",
         ]
         

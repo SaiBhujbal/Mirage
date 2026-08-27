@@ -1,5 +1,5 @@
 """
-DECEPTICON Security Fixes Module
+MIRAGE Security Fixes Module
 Addresses all remaining security gaps from pentester assessment
 """
 import os
@@ -16,7 +16,7 @@ from typing import Dict, Optional, List, Any
 from dataclasses import dataclass, field
 from datetime import datetime
 
-logger = logging.getLogger("decepticon.security")
+logger = logging.getLogger("mirage.security")
 
 
 # ============================================================================
@@ -327,7 +327,7 @@ class TOTPManager:
         return self.pyotp.random_base32()
     
     def get_provisioning_uri(self, secret: str, account_name: str, 
-                             issuer: str = "DECEPTICON-WAF") -> Optional[str]:
+                             issuer: str = "MIRAGE-WAF") -> Optional[str]:
         """Generate QR code URI for authenticator apps"""
         if not self.totp_available:
             return None
@@ -639,7 +639,7 @@ class AuditLogger:
 # ============================================================================
 
 GITIGNORE_CONTENT = """
-# DECEPTICON Security - DO NOT COMMIT
+# MIRAGE Security - DO NOT COMMIT
 data/security/
 data/audit/
 *.key
@@ -696,7 +696,7 @@ def create_gitignore(path: str = "./.gitignore"):
         
         if "data/security/" not in content:
             with open(gitignore_path, 'a') as f:
-                f.write("\n# DECEPTICON Security\n")
+                f.write("\n# MIRAGE Security\n")
                 f.write("data/security/\n")
                 f.write("data/audit/\n")
                 f.write("ADMIN_KEY.txt\n")

@@ -1,5 +1,5 @@
 """
-DECEPTICON Honeypot Test Suite
+MIRAGE Honeypot Test Suite
 Tests deception, canary tokens, and tarpit components
 """
 import time
@@ -71,7 +71,7 @@ class TestCanaryFactory:
         session_id = "test_session_2"
         domain = factory.create_dns_token(session_id)
 
-        assert domain.endswith(".canary.decepticon.local")
+        assert domain.endswith(".canary.mirage.local")
         token = factory.check_token(domain)
         assert token is not None
         assert token.token_type == 'dns'
@@ -294,7 +294,7 @@ def run_all_tests():
     results = {"passed": 0, "failed": 0, "errors": []}
 
     print("\n" + "="*70)
-    print("DECEPTICON Honeypot Test Suite")
+    print("MIRAGE Honeypot Test Suite")
     print("="*70 + "\n")
 
     for test_class in test_classes:

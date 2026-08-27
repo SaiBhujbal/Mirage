@@ -1,5 +1,5 @@
 """
-DECEPTICON Enhanced Honeypot
+MIRAGE Enhanced Honeypot
 Anti-fingerprinting measures with randomized responses
 
 Addresses: "Honeypot Detection" vulnerability

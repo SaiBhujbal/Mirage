@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-DECEPTICON Adaptive Anomaly Detection - Ensemble ML Training
+MIRAGE Adaptive Anomaly Detection - Ensemble ML Training
 =============================================================
 Naval SWAVLAMBAN 2025 Challenge 3
 
@@ -17,7 +17,7 @@ This module implements:
 
 All models exported to ONNX format (NO PICKLE - secure inference).
 
-Author: DECEPTICON Team
+Author: MIRAGE Team
 Date: December 2025
 """
 
@@ -100,7 +100,7 @@ except ImportError:
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger("decepticon.ml.adaptive_trainer")
+logger = logging.getLogger("mirage.ml.adaptive_trainer")
 
 
 # ============================================================================
@@ -1014,7 +1014,7 @@ class AdaptiveEnsembleTrainer:
         self.categories = categories
         
         logger.info(f"\n{'='*60}")
-        logger.info("DECEPTICON Adaptive Ensemble Training")
+        logger.info("MIRAGE Adaptive Ensemble Training")
         logger.info(f"{'='*60}")
         logger.info(f"Samples: {X.shape[0]}, Features: {X.shape[1]}")
         logger.info(f"Categories: {categories}")
@@ -1818,7 +1818,7 @@ def main():
     """Main training entry point"""
     import argparse
     
-    parser = argparse.ArgumentParser(description='DECEPTICON Adaptive Ensemble Trainer')
+    parser = argparse.ArgumentParser(description='MIRAGE Adaptive Ensemble Trainer')
     parser.add_argument('--samples', type=int, default=1500,
                         help='Samples per category (default: 1500)')
     parser.add_argument('--models-dir', type=str, default='./models',
@@ -1831,7 +1831,7 @@ def main():
     print("""
     ╔══════════════════════════════════════════════════════════════════╗
     ║                                                                  ║
-    ║     DECEPTICON Adaptive Anomaly Detection Training              ║
+    ║     MIRAGE Adaptive Anomaly Detection Training              ║
     ║     Naval SWAVLAMBAN 2025 - Challenge 3                         ║
     ║                                                                  ║
     ║     Ensemble: Isolation Forest + XGBoost + VAE                  ║

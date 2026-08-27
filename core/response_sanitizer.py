@@ -1,5 +1,5 @@
 """
-DECEPTICON Response Sanitizer
+MIRAGE Response Sanitizer
 Prevent sensitive data leakage even if attacker bypasses WAF
 Last line of defense for data protection
 """
@@ -365,7 +365,7 @@ class HeaderSanitizer:
     
     # Headers to modify
     MODIFY_HEADERS = {
-        'server': 'DECEPTICON',
+        'server': 'MIRAGE',
     }
     
     @classmethod
@@ -393,7 +393,7 @@ class HeaderSanitizer:
         sanitized['X-Frame-Options'] = 'DENY'
         sanitized['X-XSS-Protection'] = '1; mode=block'
         sanitized['Referrer-Policy'] = 'strict-origin-when-cross-origin'
-        sanitized['X-Powered-By'] = 'DECEPTICON-WAF'
+        sanitized['X-Powered-By'] = 'MIRAGE-WAF'
         
         return sanitized
 

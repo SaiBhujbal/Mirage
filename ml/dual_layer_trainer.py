@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-DECEPTICON Dual-Layer ML Trainer
+MIRAGE Dual-Layer ML Trainer
 ================================
 Naval SWAVLAMBAN 2025 Challenge 3
 
@@ -9,7 +9,7 @@ Comprehensive training system supporting:
 - Network Layer: CICIDS2017, UNSW-NB15, CICDDoS2019, CTU-13 (78 features)
 - Meta-Ensemble: Combines both layers for final decision
 
-Author: DECEPTICON Team
+Author: MIRAGE Team
 Date: December 2025
 """
 
@@ -55,7 +55,7 @@ from ml.dataset_loader import DatasetLoader, HTTPFeatureExtractor, SyntheticData
 
 warnings.filterwarnings('ignore')
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger("decepticon.dual_trainer")
+logger = logging.getLogger("mirage.dual_trainer")
 
 
 # ============================================================================
@@ -775,7 +775,7 @@ class DualLayerTrainer:
     
     def _generate_signatures(self):
         """Generate HMAC signatures for model files"""
-        key = os.environ.get('MODEL_SIGNING_KEY', 'decepticon-naval-2025').encode()
+        key = os.environ.get('MODEL_SIGNING_KEY', 'mirage-naval-2025').encode()
         signatures = {}
         
         for f in self.models_dir.glob('*'):
@@ -798,7 +798,7 @@ class DualLayerTrainer:
 if __name__ == '__main__':
     import argparse
     
-    parser = argparse.ArgumentParser(description='DECEPTICON Dual-Layer ML Trainer')
+    parser = argparse.ArgumentParser(description='MIRAGE Dual-Layer ML Trainer')
     parser.add_argument('--models-dir', default='./models', help='Models output directory')
     parser.add_argument('--data-dir', default='./data/datasets', help='Datasets directory')
     parser.add_argument('--http-only', action='store_true', help='Train HTTP layer only')

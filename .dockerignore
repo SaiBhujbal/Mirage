@@ -1,5 +1,5 @@
 # =============================================
-# DECEPTICON WAF - Docker Build Exclusions
+# MIRAGE WAF - Docker Build Exclusions
 # =============================================
 # Excludes files not needed at runtime to reduce image size
 # Payload datasets are ONLY needed for training, not runtime

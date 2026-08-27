@@ -171,7 +171,7 @@ class TestHeaderSanitizer:
         assert 'Server' not in sanitized
 
         # 'X-Powered-By' is in REMOVE_HEADERS but is added back explicitly
-        assert sanitized.get('X-Powered-By') == 'DECEPTICON-WAF'
+        assert sanitized.get('X-Powered-By') == 'MIRAGE-WAF'
 
         # Check kept headers
         assert sanitized.get('Content-Type') == 'application/json'

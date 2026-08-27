@@ -1,5 +1,5 @@
 """
-DECEPTICON ML Evasion Test Suite
+MIRAGE ML Evasion Test Suite
 Tests for adversarial ML attacks
 
 Run with: pytest tests/test_evasion.py -v

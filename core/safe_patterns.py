@@ -1,5 +1,5 @@
 """
-DECEPTICON Safe Regex Patterns
+MIRAGE Safe Regex Patterns
 FIXES: Regex Denial of Service (ReDoS) (HIGH)
 
 SECURITY MEASURES:
@@ -16,7 +16,7 @@ from typing import Optional, Tuple, List, Pattern
 from functools import wraps
 import threading
 
-logger = logging.getLogger("decepticon.security.regex")
+logger = logging.getLogger("mirage.security.regex")
 
 
 # ============================================================================

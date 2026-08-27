@@ -1,4 +1,4 @@
-# DECEPTICON WAF - Security Test Suite
+# MIRAGE WAF - Security Test Suite
 
 ## Quick Start
 
@@ -223,7 +223,7 @@ docker-compose -f docker-compose.production.yml up -d
 ```
 Test suites passed: 5 / 5
 
-✅ DECEPTICON WAF IS OPERATIONAL
+✅ MIRAGE WAF IS OPERATIONAL
 
 System Status:
   ✅ ML Detection:         Active (97.43% accuracy)
@@ -260,7 +260,7 @@ open http://localhost:8080/metrics
 # Grafana dashboards
 open http://localhost:3000
 # Login: admin / admin
-# Navigate to: DECEPTICON WAF Performance / Security / Alerts
+# Navigate to: MIRAGE WAF Performance / Security / Alerts
 ```
 
 ### Run Comprehensive Security Test
@@ -424,7 +424,7 @@ All test scripts are located in `tests/security/`:
 For issues or questions:
 1. Check `docs/COMPREHENSIVE_SECURITY_TEST.md` for detailed test procedures
 2. Review `integrations/INTEGRATION_GUIDE.md` for WAF integration
-3. Check logs: `tail -f logs/decepticon.log`
+3. Check logs: `tail -f logs/mirage.log`
 4. Verify metrics: `curl http://localhost:8080/metrics`
 
 ---

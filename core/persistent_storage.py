@@ -1,5 +1,5 @@
 """
-DECEPTICON Persistent Session Storage
+MIRAGE Persistent Session Storage
 Redis backend for session persistence across restarts
 
 Addresses: "In-Memory Session Storage" vulnerability
@@ -15,7 +15,7 @@ from dataclasses import dataclass, field, asdict
 from abc import ABC, abstractmethod
 import threading
 
-logger = logging.getLogger("decepticon.storage")
+logger = logging.getLogger("mirage.storage")
 
 
 class SessionStorageBackend(ABC):
@@ -124,7 +124,7 @@ class RedisStorage(SessionStorageBackend):
                  port: int = 6379,
                  db: int = 0,
                  password: str = None,
-                 prefix: str = "decepticon:session:",
+                 prefix: str = "mirage:session:",
                  cluster_mode: bool = False,
                  sentinel_hosts: List[tuple] = None,
                  sentinel_master: str = None):

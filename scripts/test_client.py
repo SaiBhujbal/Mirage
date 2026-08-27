@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-DECEPTICON WAF Test Client
+MIRAGE WAF Test Client
 Send test requests to the WAF and view results
 """
 import httpx
@@ -130,7 +130,7 @@ def print_result(result: dict, verbose: bool = False):
         print(json.dumps(result, indent=2))
 
 def main():
-    parser = argparse.ArgumentParser(description="DECEPTICON WAF Test Client")
+    parser = argparse.ArgumentParser(description="MIRAGE WAF Test Client")
     
     subparsers = parser.add_subparsers(dest='command', help='Commands')
     

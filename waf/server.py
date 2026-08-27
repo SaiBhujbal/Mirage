@@ -171,7 +171,7 @@ def gateway(path):
     d = waf.evaluate(method, full_path, query, body, dict(request.headers), _client_ip())
 
     enforcing = MODE == "block"
-    hdr = {"X-WAF": "DECEPTICON", "X-WAF-Mode": MODE, "X-WAF-Latency-ms": str(d.latency_ms),
+    hdr = {"X-WAF": "MIRAGE", "X-WAF-Mode": MODE, "X-WAF-Latency-ms": str(d.latency_ms),
            "X-WAF-Decision": d.action, "X-WAF-Layer": d.layer}
 
     # HONEYPOT: deceive + capture + alert (only when enforcing)
@@ -204,7 +204,7 @@ def gateway(path):
 
 if __name__ == "__main__":
     print(f"""
-  DECEPTICON Standalone Layered WAF
+  MIRAGE Standalone Layered WAF
   mode={MODE}  port={PORT}  upstream={UPSTREAM or 'builtin-echo'}  ml_enforce={ML_ENFORCE}
   layers: rate-limit -> signatures -> advanced -> ML({'enforce' if ML_ENFORCE else 'shadow'}) -> honeypot
   health: http://127.0.0.1:{PORT}/waf/health   stats: http://127.0.0.1:{PORT}/waf/stats

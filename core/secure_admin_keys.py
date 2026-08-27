@@ -1,5 +1,5 @@
 """
-DECEPTICON Secure Admin Key Manager
+MIRAGE Secure Admin Key Manager
 FIXES: Default Admin Credentials / Key Storage (CRITICAL)
 
 SECURITY MEASURES:
@@ -24,7 +24,7 @@ from typing import Dict, Optional, Tuple, List
 from dataclasses import dataclass, field
 from pathlib import Path
 
-logger = logging.getLogger("decepticon.security.admin_keys")
+logger = logging.getLogger("mirage.security.admin_keys")
 
 
 # ============================================================================
@@ -192,7 +192,7 @@ class SecureKeyStorage:
         logger.info("Using environment variable key storage")
         
         # Load any existing keys from env
-        admin_key_hash = os.environ.get('DECEPTICON_ADMIN_KEY_HASH')
+        admin_key_hash = os.environ.get('MIRAGE_ADMIN_KEY_HASH')
         if admin_key_hash:
             self.keys["admin"] = SecureKeyInfo(
                 key_id="admin",
@@ -242,7 +242,7 @@ class SecureKeyStorage:
     def _store_to_vault(self, key_info: SecureKeyInfo):
         """Store key info in Vault"""
         self.vault_client.secrets.kv.v2.create_or_update_secret(
-            path=f"decepticon/keys/{key_info.key_id}",
+            path=f"mirage/keys/{key_info.key_id}",
             secret={
                 "key_hash": key_info.key_hash,
                 "name": key_info.name,
@@ -266,12 +266,12 @@ class SecureKeyStorage:
         
         try:
             self.secrets_client.create_secret(
-                Name=f"decepticon/keys/{key_info.key_id}",
+                Name=f"mirage/keys/{key_info.key_id}",
                 SecretString=secret_value,
             )
         except self.secrets_client.exceptions.ResourceExistsException:
             self.secrets_client.update_secret(
-                SecretId=f"decepticon/keys/{key_info.key_id}",
+                SecretId=f"mirage/keys/{key_info.key_id}",
                 SecretString=secret_value,
             )
 
@@ -481,7 +481,7 @@ def generate_admin_key_cli():
     """
     import argparse
     
-    parser = argparse.ArgumentParser(description="Generate DECEPTICON admin API key")
+    parser = argparse.ArgumentParser(description="Generate MIRAGE admin API key")
     parser.add_argument("command", choices=["generate", "list", "revoke"])
     parser.add_argument("--name", default="admin", help="Key name")
     parser.add_argument("--key-id", help="Key ID (for revoke)")
@@ -502,7 +502,7 @@ def generate_admin_key_cli():
         print("="*60)
         print(f"\nKey ID: {key_id}")
         print(f"API Key: {full_key}")
-        print(f"\nKey Hash (for DECEPTICON_ADMIN_KEY_HASH env var):")
+        print(f"\nKey Hash (for MIRAGE_ADMIN_KEY_HASH env var):")
         print(SecureKeyGenerator.hash_key(full_key))
         print("\n" + "="*60)
         print("⚠️  This key will be unavailable in 5 minutes!")

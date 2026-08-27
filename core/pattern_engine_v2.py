@@ -1,5 +1,5 @@
 """
-DECEPTICON Ultra-Fast Pattern Matching Engine v2.0
+MIRAGE Ultra-Fast Pattern Matching Engine v2.0
 ===================================================
 Naval SWAVLAMBAN 2025 Challenge 3
 
@@ -652,7 +652,7 @@ pattern_engine = ComprehensivePatternEngine()
 # ============================================================================
 
 if __name__ == '__main__':
-    print("DECEPTICON Comprehensive Pattern Engine v2.0")
+    print("MIRAGE Comprehensive Pattern Engine v2.0")
     print("=" * 60)
     
     engine = ComprehensivePatternEngine()

@@ -25,7 +25,7 @@ CACHE = Path(__file__).resolve().parent.parent / "data" / "corpus" / "kev_raw.js
 def fetch_kev(use_cache_hours: float = 24.0) -> dict:
     if CACHE.exists() and (time.time() - CACHE.stat().st_mtime) < use_cache_hours * 3600:
         return json.loads(CACHE.read_text())
-    req = urllib.request.Request(KEV_URL, headers={"User-Agent": "decepticon-pipeline/1.0"})
+    req = urllib.request.Request(KEV_URL, headers={"User-Agent": "mirage-pipeline/1.0"})
     with urllib.request.urlopen(req, timeout=30, context=ssl.create_default_context()) as r:
         data = json.load(r)
     CACHE.parent.mkdir(parents=True, exist_ok=True)

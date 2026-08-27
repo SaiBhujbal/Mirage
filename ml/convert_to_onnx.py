@@ -359,7 +359,7 @@ class ONNXConverter:
     def convert_all_models(self):
         """Convert all models in the models directory"""
         print("\n" + "="*60)
-        print("DECEPTICON WAF - ONNX Model Conversion")
+        print("MIRAGE WAF - ONNX Model Conversion")
         print("="*60)
 
         models = {

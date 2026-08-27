@@ -1,5 +1,5 @@
 """
-DECEPTICON WAF API
+MIRAGE WAF API
 FastAPI application with all WAF endpoints
 SECURED with API key authentication and security headers
 
@@ -91,7 +91,7 @@ except ImportError as e:
 async def lifespan(app: FastAPI):
     """Application lifespan handler"""
     # Startup
-    print("[INFO] DECEPTICON WAF Starting...")
+    print("[INFO] MIRAGE WAF Starting...")
     print(f"   Environment: {settings.ENV}")
     print(f"   Max Sync Latency: {settings.MAX_SYNC_LATENCY_MS}ms")
     print(f"   ML Model: {settings.ML_MODEL_PATH}")
@@ -131,10 +131,10 @@ async def lifespan(app: FastAPI):
     yield
 
     # Shutdown
-    print("[INFO] DECEPTICON WAF Shutting down...")
+    print("[INFO] MIRAGE WAF Shutting down...")
 
 app = FastAPI(
-    title="DECEPTICON ML-WAF",
+    title="MIRAGE ML-WAF",
     description="Ultra-low latency ML-powered Web Application Firewall",
     version="2.0.0-secure",
     lifespan=lifespan,
@@ -375,7 +375,7 @@ async def get_metrics():
 async def root():
     """Root endpoint"""
     return {
-        "name": "DECEPTICON ML-WAF",
+        "name": "MIRAGE ML-WAF",
         "version": "1.0.0",
         "status": "operational",
         "endpoints": {
@@ -573,7 +573,7 @@ async def test_payloads(req: TestPayloadRequest):
             method="GET",
             path="/test",
             query_string=f"input={payload}",
-            headers={"user-agent": "DECEPTICON-Tester"},
+            headers={"user-agent": "MIRAGE-Tester"},
             body=b"",
         )
         

@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "decepticon-waf.fullname" . }}
+  name: {{ include "mirage-waf.fullname" . }}
   labels:
-    {{- include "decepticon-waf.labels" . | nindent 4 }}
+    {{- include "mirage-waf.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "decepticon-waf.selectorLabels" . | nindent 6 }}
+      {{- include "mirage-waf.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -18,13 +18,13 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "decepticon-waf.selectorLabels" . | nindent 8 }}
+        {{- include "mirage-waf.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "decepticon-waf.serviceAccountName" . }}
+      serviceAccountName: {{ include "mirage-waf.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -39,20 +39,20 @@ spec:
               protocol: TCP
           envFrom:
             - configMapRef:
-                name: {{ include "decepticon-waf.fullname" . }}-config
+                name: {{ include "mirage-waf.fullname" . }}-config
           env:
             {{- if .Values.secrets.ADMIN_PASSWORD_HASH }}
             - name: ADMIN_PASSWORD_HASH
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "decepticon-waf.fullname" . }}-secret
+                  name: {{ include "mirage-waf.fullname" . }}-secret
                   key: ADMIN_PASSWORD_HASH
             {{- end }}
             {{- if .Values.secrets.SESSION_ENCRYPTION_KEY }}
             - name: SESSION_ENCRYPTION_KEY
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "decepticon-waf.fullname" . }}-secret
+                  name: {{ include "mirage-waf.fullname" . }}-secret
                   key: SESSION_ENCRYPTION_KEY
             {{- end }}
           livenessProbe:

@@ -1,6 +1,6 @@
 {
   "dashboard": {
-    "title": "DECEPTICON WAF - Security Overview",
+    "title": "MIRAGE WAF - Security Overview",
     "tags": ["waf", "security", "overview"],
     "timezone": "browser",
     "schemaVersion": 38,

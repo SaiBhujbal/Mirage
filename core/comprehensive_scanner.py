@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-DECEPTICON Comprehensive Security Scanner
+MIRAGE Comprehensive Security Scanner
 ==========================================
 Naval SWAVLAMBAN 2025 Challenge 3
 
@@ -12,7 +12,7 @@ Red Team perspective scanner covering ALL attack types:
 
 This scanner tests the WAF against REAL attack payloads.
 
-Author: DECEPTICON Team (Red Team)
+Author: MIRAGE Team (Red Team)
 Date: December 2025
 """
 
@@ -40,7 +40,7 @@ from core.comprehensive_patterns import (
 )
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("decepticon.scanner")
+logger = logging.getLogger("mirage.scanner")
 
 
 class Severity(Enum):
@@ -502,7 +502,7 @@ def is_malicious(payload: str) -> bool:
 # ============================================================================
 
 if __name__ == '__main__':
-    print("DECEPTICON Comprehensive Security Scanner")
+    print("MIRAGE Comprehensive Security Scanner")
     print("=" * 70)
     
     scanner = ComprehensiveScanner()

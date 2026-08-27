@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "decepticon-waf.fullname" . }}
+  name: {{ include "mirage-waf.fullname" . }}
   labels:
-    {{- include "decepticon-waf.labels" . | nindent 4 }}
+    {{- include "mirage-waf.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -12,4 +12,4 @@ spec:
       protocol: TCP
       name: http
   selector:
-    {{- include "decepticon-waf.selectorLabels" . | nindent 4 }}
+    {{- include "mirage-waf.selectorLabels" . | nindent 4 }}

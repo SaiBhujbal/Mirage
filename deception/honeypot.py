@@ -1,5 +1,5 @@
 """
-DECEPTICON Deception Layer
+MIRAGE Deception Layer
 Honeypot routing, canary tokens, and tarpit functionality
 """
 import time
@@ -90,7 +90,7 @@ class CanaryFactory:
         Works even through Tor (DNS leaks)
         """
         token_id = uuid.uuid4().hex[:8]
-        domain = f"{token_id}.canary.decepticon.local"
+        domain = f"{token_id}.canary.mirage.local"
         
         token = CanaryToken(
             token_id=token_id,

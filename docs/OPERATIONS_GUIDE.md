@@ -1,4 +1,4 @@
-# DECEPTICON WAF - Operations Guide
+# MIRAGE WAF - Operations Guide
 
 ## Table of Contents
 
@@ -123,10 +123,10 @@ waf_anomaly_score
 
 ```promql
 # CPU usage (container)
-rate(container_cpu_usage_seconds_total{name="decepticon-waf"}[1m]) * 100
+rate(container_cpu_usage_seconds_total{name="mirage-waf"}[1m]) * 100
 
 # Memory usage (container)
-container_memory_usage_bytes{name="decepticon-waf"} / 1024 / 1024
+container_memory_usage_bytes{name="mirage-waf"} / 1024 / 1024
 
 # Redis memory usage
 redis_memory_used_bytes / 1024 / 1024
@@ -503,7 +503,7 @@ echo "FP rate: $(echo "scale=2; $fp_count * 100 / $total" | bc)%"
 **Docker Logs:**
 ```bash
 # WAF logs
-docker logs decepticon-waf
+docker logs mirage-waf
 
 # All logs with timestamps
 docker-compose -f docker-compose.production.yml logs -f --timestamps
@@ -512,10 +512,10 @@ docker-compose -f docker-compose.production.yml logs -f --timestamps
 **Application Logs:**
 ```bash
 # Inside container
-docker exec -it decepticon-waf ls /app/logs/
+docker exec -it mirage-waf ls /app/logs/
 
 # View logs
-docker exec -it decepticon-waf tail -f /app/logs/waf.log
+docker exec -it mirage-waf tail -f /app/logs/waf.log
 ```
 
 ### Log Rotation
@@ -523,7 +523,7 @@ docker exec -it decepticon-waf tail -f /app/logs/waf.log
 **Configure logrotate:**
 
 ```bash
-# /etc/logrotate.d/docker-decepticon
+# /etc/logrotate.d/docker-mirage
 
 /var/lib/docker/containers/*/*.log {
     rotate 14
@@ -536,9 +536,9 @@ docker exec -it decepticon-waf tail -f /app/logs/waf.log
     maxsize 100M
 
     postrotate
-        docker kill --signal=USR1 decepticon-waf 2>/dev/null || true
-        docker kill --signal=USR1 decepticon-prometheus 2>/dev/null || true
-        docker kill --signal=USR1 decepticon-grafana 2>/dev/null || true
+        docker kill --signal=USR1 mirage-waf 2>/dev/null || true
+        docker kill --signal=USR1 mirage-prometheus 2>/dev/null || true
+        docker kill --signal=USR1 mirage-grafana 2>/dev/null || true
     endscript
 }
 ```
@@ -549,22 +549,22 @@ docker exec -it decepticon-waf tail -f /app/logs/waf.log
 
 ```bash
 # SQLi attacks
-docker logs decepticon-waf 2>&1 | grep -i "sqli"
+docker logs mirage-waf 2>&1 | grep -i "sqli"
 
 # High confidence detections
-docker logs decepticon-waf 2>&1 | grep "confidence.*0.9"
+docker logs mirage-waf 2>&1 | grep "confidence.*0.9"
 
 # Blocked requests
-docker logs decepticon-waf 2>&1 | grep "BLOCKED"
+docker logs mirage-waf 2>&1 | grep "BLOCKED"
 
 # False positives reported
-docker logs decepticon-waf 2>&1 | grep "false_positive"
+docker logs mirage-waf 2>&1 | grep "false_positive"
 ```
 
 **Count by attack type:**
 
 ```bash
-docker logs decepticon-waf 2>&1 | \
+docker logs mirage-waf 2>&1 | \
     grep "category" | \
     sed 's/.*category":\s*"\([^"]*\)".*/\1/' | \
     sort | uniq -c | sort -rn
@@ -598,7 +598,7 @@ docker logs decepticon-waf 2>&1 | \
 4. **Investigation**
    ```bash
    # Export attack logs
-   docker logs decepticon-waf --since 1h > incident_$(date +%Y%m%d_%H%M).log
+   docker logs mirage-waf --since 1h > incident_$(date +%Y%m%d_%H%M).log
 
    # Analyze attack patterns
    cat incident_*.log | grep "BLOCKED" | jq .
@@ -632,7 +632,7 @@ TIME_RANGE="${2:-1h}"  # Default: last hour
 mkdir -p incidents/$INCIDENT_ID
 
 # Export logs
-docker logs decepticon-waf --since $TIME_RANGE \
+docker logs mirage-waf --since $TIME_RANGE \
     > incidents/$INCIDENT_ID/waf.log
 
 # Export Prometheus metrics
@@ -640,7 +640,7 @@ curl -s "http://localhost:9090/api/v1/query_range?query=waf_requests_blocked_tot
     > incidents/$INCIDENT_ID/metrics.json
 
 # Export blocked IPs
-docker logs decepticon-waf --since $TIME_RANGE | \
+docker logs mirage-waf --since $TIME_RANGE | \
     grep "BLOCKED" | \
     jq -r '.source_ip' | \
     sort | uniq -c | sort -rn \
@@ -669,10 +669,10 @@ docker stats --no-stream
 df -h
 
 # Review yesterday's attacks
-docker logs decepticon-waf --since 24h | grep "BLOCKED" | wc -l
+docker logs mirage-waf --since 24h | grep "BLOCKED" | wc -l
 
 # Check for false positives
-docker logs decepticon-waf --since 24h | grep "false_positive" | wc -l
+docker logs mirage-waf --since 24h | grep "false_positive" | wc -l
 ```
 
 ### Weekly Tasks
@@ -688,7 +688,7 @@ docker-compose -f docker-compose.production.yml pull
 docker image prune -f
 
 # Check Prometheus storage
-du -sh /var/lib/docker/volumes/decepticon-waf_prometheus-data
+du -sh /var/lib/docker/volumes/mirage-waf_prometheus-data
 
 # Review Grafana dashboards
 # - Check for new attack patterns
@@ -735,19 +735,19 @@ python3 metrics/false_positive_monitor.py --analyze-patterns
 #!/bin/bash
 # backup.sh
 
-BACKUP_DIR="/backups/decepticon-$(date +%Y%m%d_%H%M%S)"
+BACKUP_DIR="/backups/mirage-$(date +%Y%m%d_%H%M%S)"
 mkdir -p "$BACKUP_DIR"
 
 echo "Starting backup..."
 
 # Backup Docker volumes
-docker run --rm -v decepticon-waf_redis-data:/data \
+docker run --rm -v mirage-waf_redis-data:/data \
     -v "$BACKUP_DIR":/backup alpine tar czf /backup/redis-data.tar.gz /data
 
-docker run --rm -v decepticon-waf_prometheus-data:/prometheus \
+docker run --rm -v mirage-waf_prometheus-data:/prometheus \
     -v "$BACKUP_DIR":/backup alpine tar czf /backup/prometheus-data.tar.gz /prometheus
 
-docker run --rm -v decepticon-waf_grafana-data:/var/lib/grafana \
+docker run --rm -v mirage-waf_grafana-data:/var/lib/grafana \
     -v "$BACKUP_DIR":/backup alpine tar czf /backup/grafana-data.tar.gz /var/lib/grafana
 
 # Backup configuration
@@ -763,7 +763,7 @@ cp -r rules "$BACKUP_DIR/" 2>/dev/null
 # Create backup manifest
 cat > "$BACKUP_DIR/manifest.txt" << EOF
 Backup Date: $(date)
-WAF Version: $(docker exec decepticon-waf python -c "import ml; print(getattr(ml, '__version__', 'unknown'))" 2>/dev/null || echo "unknown")
+WAF Version: $(docker exec mirage-waf python -c "import ml; print(getattr(ml, '__version__', 'unknown'))" 2>/dev/null || echo "unknown")
 Docker Compose Version: $(docker-compose version --short)
 Volumes Backed Up:
 - Redis data
@@ -799,13 +799,13 @@ echo "Restoring from: $BACKUP_DIR"
 docker-compose -f docker-compose.production.yml down
 
 # Restore volumes
-docker run --rm -v decepticon-waf_redis-data:/data \
+docker run --rm -v mirage-waf_redis-data:/data \
     -v "$BACKUP_DIR":/backup alpine sh -c "cd /data && tar xzf /backup/redis-data.tar.gz --strip 1"
 
-docker run --rm -v decepticon-waf_prometheus-data:/prometheus \
+docker run --rm -v mirage-waf_prometheus-data:/prometheus \
     -v "$BACKUP_DIR":/backup alpine sh -c "cd /prometheus && tar xzf /backup/prometheus-data.tar.gz --strip 1"
 
-docker run --rm -v decepticon-waf_grafana-data:/var/lib/grafana \
+docker run --rm -v mirage-waf_grafana-data:/var/lib/grafana \
     -v "$BACKUP_DIR":/backup alpine sh -c "cd /var/lib/grafana && tar xzf /backup/grafana-data.tar.gz --strip 1"
 
 # Restore configuration
@@ -904,17 +904,17 @@ services:
 **Auto-start on boot:**
 
 ```bash
-# /etc/systemd/system/decepticon-waf.service
+# /etc/systemd/system/mirage-waf.service
 
 [Unit]
-Description=DECEPTICON WAF
+Description=MIRAGE WAF
 Requires=docker.service
 After=docker.service
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-WorkingDirectory=/opt/decepticon-waf
+WorkingDirectory=/opt/mirage-waf
 ExecStart=/usr/local/bin/docker-compose -f docker-compose.production.yml up -d
 ExecStop=/usr/local/bin/docker-compose -f docker-compose.production.yml down
 TimeoutStartSec=0
@@ -926,8 +926,8 @@ WantedBy=multi-user.target
 **Enable service:**
 
 ```bash
-sudo systemctl enable decepticon-waf
-sudo systemctl start decepticon-waf
+sudo systemctl enable mirage-waf
+sudo systemctl start mirage-waf
 ```
 
 ### Cron Jobs
@@ -935,16 +935,16 @@ sudo systemctl start decepticon-waf
 **Scheduled maintenance:**
 
 ```bash
-# /etc/cron.d/decepticon-waf
+# /etc/cron.d/mirage-waf
 
 # Daily health check (6 AM)
-0 6 * * * root /opt/decepticon-waf/scripts/daily_maintenance.sh >> /var/log/decepticon/maintenance.log 2>&1
+0 6 * * * root /opt/mirage-waf/scripts/daily_maintenance.sh >> /var/log/mirage/maintenance.log 2>&1
 
 # Weekly backup (Sunday 2 AM)
-0 2 * * 0 root /opt/decepticon-waf/scripts/backup.sh >> /var/log/decepticon/backup.log 2>&1
+0 2 * * 0 root /opt/mirage-waf/scripts/backup.sh >> /var/log/mirage/backup.log 2>&1
 
 # Monthly model retraining (1st of month, 3 AM)
-0 3 1 * * root cd /opt/decepticon-waf && python3 ml/train_dual_layer.py >> /var/log/decepticon/training.log 2>&1
+0 3 1 * * root cd /opt/mirage-waf && python3 ml/train_dual_layer.py >> /var/log/mirage/training.log 2>&1
 ```
 
 ---

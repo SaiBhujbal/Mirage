@@ -1,5 +1,5 @@
 """
-DECEPTICON Advanced Protection Module
+MIRAGE Advanced Protection Module
 Handles edge cases, novel attacks, and ML bypass scenarios
 """
 import re

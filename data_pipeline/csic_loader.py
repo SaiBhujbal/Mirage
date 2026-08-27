@@ -36,7 +36,7 @@ def _download(name: str) -> Path:
     dst = RAW / FILES[name]
     if dst.exists() and dst.stat().st_size > 1000:
         return dst
-    req = urllib.request.Request(BASE + FILES[name], headers={"User-Agent": "decepticon/1.0"})
+    req = urllib.request.Request(BASE + FILES[name], headers={"User-Agent": "mirage/1.0"})
     with urllib.request.urlopen(req, timeout=120, context=ssl.create_default_context()) as r:
         data = r.read()
     dst.write_bytes(data)

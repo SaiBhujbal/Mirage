@@ -1,5 +1,5 @@
 """
-DECEPTICON Security Hardening Module
+MIRAGE Security Hardening Module
 Addresses pentester-identified vulnerabilities
 """
 import os
@@ -15,7 +15,7 @@ from functools import wraps
 from collections import defaultdict
 import threading
 
-logger = logging.getLogger("decepticon.security")
+logger = logging.getLogger("mirage.security")
 
 # ============================================================================
 # API AUTHENTICATION
@@ -185,12 +185,12 @@ class APIKeyManager:
         
         # Display key ONCE on console
         print("\n" + "=" * 70)
-        print("[SECURITY] DECEPTICON ADMIN API KEY - SAVE THIS NOW!")
+        print("[SECURITY] MIRAGE ADMIN API KEY - SAVE THIS NOW!")
         print("=" * 70)
         print(f"\nAPI Key: {full_key}\n")
         print("[WARNING] THIS KEY WILL NOT BE SHOWN AGAIN!")
         print("[WARNING] SAVE IT SECURELY (password manager, vault, etc.)")
-        print("[WARNING] Set as environment variable: DECEPTICON_ADMIN_KEY")
+        print("[WARNING] Set as environment variable: MIRAGE_ADMIN_KEY")
         print("=" * 70 + "\n")
         
         # Also log (without the key itself for security)
@@ -510,7 +510,7 @@ class SIEMIntegration:
             "timestamp": time.time(),
             "event_type": event_type,
             "severity": severity,
-            "source": "decepticon_waf",
+            "source": "mirage_waf",
             "data": data,
         }
         
@@ -539,11 +539,11 @@ class SIEMIntegration:
             message = json.dumps(event)
             
             # Format as CEF (Common Event Format) for better SIEM compatibility
-            cef = f"CEF:0|Decepticon|WAF|1.0|{event['event_type']}|{event['severity']}|{priority}|{message}"
+            cef = f"CEF:0|Mirage|WAF|1.0|{event['event_type']}|{event['severity']}|{priority}|{message}"
             
             self.syslog_handler.emit(
                 logging.LogRecord(
-                    name="decepticon",
+                    name="mirage",
                     level=logging.WARNING,
                     pathname="",
                     lineno=0,

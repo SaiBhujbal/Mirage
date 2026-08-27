@@ -13,7 +13,7 @@
 ║  impossible. Do NOT use this module for inference.                            ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 
-DECEPTICON Secure ML Inference (legacy)
+MIRAGE Secure ML Inference (legacy)
 FIXES: Remote Code Execution via Pickle Deserialization (CRITICAL)
 
 THIS MODULE REPLACES ml/inference.py
@@ -35,7 +35,7 @@ from typing import Dict, List, Optional, Tuple, Any
 from dataclasses import dataclass
 from pathlib import Path
 
-logger = logging.getLogger("decepticon.ml.secure_inference")
+logger = logging.getLogger("mirage.ml.secure_inference")
 
 # --- train/serve feature contract -------------------------------------------
 # This module's own 50-dim vector (binary has_* flags, no headers) is NOT the

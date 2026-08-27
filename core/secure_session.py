@@ -1,5 +1,5 @@
 """
-DECEPTICON Secure Session Manager
+MIRAGE Secure Session Manager
 FIXES: Predictable Session IDs, Session Hijacking, Session Enumeration
 
 SECURITY MEASURES:
@@ -21,7 +21,7 @@ from collections import defaultdict
 import threading
 import json
 
-logger = logging.getLogger("decepticon.security.session")
+logger = logging.getLogger("mirage.security.session")
 
 
 # ============================================================================

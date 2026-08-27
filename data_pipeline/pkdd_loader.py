@@ -33,7 +33,7 @@ def _download(which: str = "test") -> Path:
     dst = RAW / f"pkdd2007_{which}.txt"
     if dst.exists() and dst.stat().st_size > 1000:
         return dst
-    req = urllib.request.Request(BASE + FILES[which], headers={"User-Agent": "decepticon/1.0"})
+    req = urllib.request.Request(BASE + FILES[which], headers={"User-Agent": "mirage/1.0"})
     with urllib.request.urlopen(req, timeout=180, context=ssl.create_default_context()) as r:
         dst.write_bytes(r.read())
     return dst

@@ -1,4 +1,4 @@
-# DECEPTICON WAF - ML Model Training Guide
+# MIRAGE WAF - ML Model Training Guide
 
 ## Complete Step-by-Step Training Guide
 
@@ -18,7 +18,7 @@ This comprehensive guide walks you through training the ML-powered WAF detection
 
 ```bash
 # Navigate to project directory
-cd decepticon-waf
+cd mirage-waf
 
 # Create virtual environment (recommended)
 python -m venv venv
@@ -657,7 +657,7 @@ python -m ml.active_learner \
 - XGBoost Documentation: https://xgboost.readthedocs.io/
 
 ### Contact
-- Team: DECEPTICON
+- Team: MIRAGE
 - Challenge: Naval SWAVLAMBAN 2025 - Challenge 3
 - Version: 2.0.0-secure
 

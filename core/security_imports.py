@@ -1,5 +1,5 @@
 """
-DECEPTICON Security Import Blocker
+MIRAGE Security Import Blocker
 ===================================
 This module MUST be imported FIRST in any entry point.
 It blocks direct imports of vulnerable modules and forces use of secure alternatives.
@@ -98,7 +98,7 @@ def _verify_security_config():
         required_vars = [
             'REDIS_PASSWORD',
             'MODEL_SIGNING_KEY',
-            'DECEPTICON_ADMIN_KEY_HASH',
+            'MIRAGE_ADMIN_KEY_HASH',
         ]
         
         for var in required_vars:
@@ -212,7 +212,7 @@ def enforce_production_security():
     required = [
         ('REDIS_PASSWORD', 'Redis authentication'),
         ('MODEL_SIGNING_KEY', 'ML model integrity'),
-        ('DECEPTICON_ADMIN_KEY_HASH', 'Admin authentication'),
+        ('MIRAGE_ADMIN_KEY_HASH', 'Admin authentication'),
     ]
     
     for var, purpose in required:

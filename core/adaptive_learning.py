@@ -1,5 +1,5 @@
 """
-DECEPTICON Adaptive Learning Module
+MIRAGE Adaptive Learning Module
 Online learning and feedback loop for continuous improvement
 When ML fails, this learns from the miss
 """

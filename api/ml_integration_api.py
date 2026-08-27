@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-DECEPTICON ML Integration API
+MIRAGE ML Integration API
 RESTful API for integrating ML modules with ANY open-source WAF
 
 Compatible with:
@@ -628,7 +628,7 @@ def index():
     """API documentation"""
 
     return jsonify({
-        'name': 'DECEPTICON ML Integration API',
+        'name': 'MIRAGE ML Integration API',
         'version': '2.0.0',
         'description': 'RESTful API for integrating ML modules with open-source WAFs',
         'endpoints': {
@@ -650,14 +650,14 @@ def index():
             'Coraza WAF',
             'Any HTTP-based WAF'
         ],
-        'documentation': 'https://github.com/decepticon-waf/docs',
+        'documentation': 'https://github.com/mirage-waf/docs',
         'timestamp': datetime.now().isoformat()
     }), 200
 
 
 if __name__ == '__main__':
     print("\n" + "="*70)
-    print("DECEPTICON ML Integration API")
+    print("MIRAGE ML Integration API")
     print("="*70)
     print("\nStarting server on http://0.0.0.0:5000")
     print("\nAPI Endpoints:")

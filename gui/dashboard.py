@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-DECEPTICON WAF Admin Dashboard
+MIRAGE WAF Admin Dashboard
 ==============================
 Naval SWAVLAMBAN 2025 Challenge 3
 
@@ -17,7 +17,7 @@ Security:
 - Rate limiting
 - No XSS vulnerabilities (escaped output)
 
-Author: DECEPTICON Team
+Author: MIRAGE Team
 Date: December 2025
 """
 
@@ -53,7 +53,7 @@ import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("decepticon.dashboard")
+logger = logging.getLogger("mirage.dashboard")
 
 # ============================================================================
 # CONFIGURATION
@@ -395,9 +395,9 @@ SecRule REQUEST_URI|ARGS|REQUEST_BODY "@rx {rule['patterns'][0] if rule['pattern
     phase:2,\\
     block,\\
     t:none,t:urlDecodeUni,t:lowercase,\\
-    msg:'DECEPTICON Auto-Rule: {rule['category']}',\\
+    msg:'MIRAGE Auto-Rule: {rule['category']}',\\
     severity:CRITICAL,\\
-    tag:'DECEPTICON-{rule['id']}'"
+    tag:'MIRAGE-{rule['id']}'"
 """
             rules.append(rule_str)
         
@@ -428,7 +428,7 @@ if FLASK_AVAILABLE:
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>DECEPTICON WAF Dashboard</title>
+    <title>MIRAGE WAF Dashboard</title>
     <style>
         :root {
             --primary: #1a1a2e;
@@ -703,7 +703,7 @@ if FLASK_AVAILABLE:
 {% block content %}
 <div class="login-container">
     <div class="card">
-        <h3>🛡️ DECEPTICON Login</h3>
+        <h3>🛡️ MIRAGE Login</h3>
         {% if error %}
         <div class="alert alert-danger">{{ error }}</div>
         {% endif %}
@@ -1342,7 +1342,7 @@ def run_dashboard(host: str = '0.0.0.0', port: int = 8080, debug: bool = False):
     print(f"""
     ╔══════════════════════════════════════════════════════════════════╗
     ║                                                                  ║
-    ║     DECEPTICON WAF Admin Dashboard                              ║
+    ║     MIRAGE WAF Admin Dashboard                              ║
     ║{url_line:<66}║
     ║                                                                  ║
     ║{creds_line:<66}║
@@ -1357,7 +1357,7 @@ def run_dashboard(host: str = '0.0.0.0', port: int = 8080, debug: bool = False):
 if __name__ == '__main__':
     import argparse
     
-    parser = argparse.ArgumentParser(description='DECEPTICON Dashboard')
+    parser = argparse.ArgumentParser(description='MIRAGE Dashboard')
     parser.add_argument('--host', default='0.0.0.0', help='Host to bind')
     parser.add_argument('--port', type=int, default=8080, help='Port')
     parser.add_argument('--debug', action='store_true', help='Debug mode')

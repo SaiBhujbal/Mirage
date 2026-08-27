@@ -67,7 +67,7 @@ import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from ml.detector_v2 import MLResult  # noqa: E402  (path bootstrap above, repo convention)
 
-logger = logging.getLogger("decepticon.ml.gcid")
+logger = logging.getLogger("mirage.ml.gcid")
 
 _DIR = Path(__file__).resolve().parent.parent / "models_v2"
 MODEL_PATH = _DIR / "gcid.joblib"

@@ -1,5 +1,5 @@
 """
-DECEPTICON Comprehensive Honeypot System
+MIRAGE Comprehensive Honeypot System
 =========================================
 Naval SWAVLAMBAN 2025 Challenge 3
 
@@ -20,7 +20,7 @@ Honeypot responses for ALL attack types:
 - CRLF: Fake header injection success
 - Open Redirect: Redirect tracking
 
-Author: DECEPTICON Team
+Author: MIRAGE Team
 Date: December 2025
 """
 
@@ -79,7 +79,7 @@ class ComprehensiveHoneypot:
     - Tool detection (sqlmap, nikto, etc.)
     """
     
-    def __init__(self, callback_domain: str = "canary.decepticon.local"):
+    def __init__(self, callback_domain: str = "canary.mirage.local"):
         self.callback_domain = callback_domain
         self.canaries: Dict[str, CanaryToken] = {}
         self.attacker_profiles: Dict[str, AttackerProfile] = {}
@@ -891,7 +891,7 @@ comprehensive_honeypot = ComprehensiveHoneypot()
 # ============================================================================
 
 if __name__ == '__main__':
-    print("DECEPTICON Comprehensive Honeypot")
+    print("MIRAGE Comprehensive Honeypot")
     print("=" * 60)
     
     honeypot = ComprehensiveHoneypot()

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-DECEPTICON Comprehensive Feature Extractor
+MIRAGE Comprehensive Feature Extractor
 ==========================================
 Naval SWAVLAMBAN 2025 Challenge 3
 
@@ -12,7 +12,7 @@ Naval SWAVLAMBAN 2025 Challenge 3
 
 Security Reviewed: No eval(), no pickle, safe operations only
 
-Author: DECEPTICON Team
+Author: MIRAGE Team
 Date: December 2025
 """
 
@@ -477,7 +477,7 @@ def extract_features(payload: str, path: str = '', query: str = '',
 # ============================================================================
 
 if __name__ == '__main__':
-    print("DECEPTICON Comprehensive Feature Extractor")
+    print("MIRAGE Comprehensive Feature Extractor")
     print("=" * 60)
     
     extractor = ComprehensiveFeatureExtractor()

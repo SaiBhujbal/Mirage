@@ -1,5 +1,5 @@
 """
-DECEPTICON WAF Comprehensive Test Suite
+MIRAGE WAF Comprehensive Test Suite
 Tests all components with real attack payloads
 """
 
@@ -861,7 +861,7 @@ def run_all_tests():
     results = {"passed": 0, "failed": 0, "errors": []}
 
     print("\n" + "=" * 70)
-    print("DECEPTICON WAF Test Suite")
+    print("MIRAGE WAF Test Suite")
     print("=" * 70 + "\n")
 
     for test_class in test_classes:

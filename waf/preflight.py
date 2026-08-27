@@ -152,7 +152,7 @@ def print_report(findings=None, stream=sys.stderr) -> int:
     ncrit = sum(1 for s, *_ in findings if s == CRITICAL)
     nwarn = sum(1 for s, *_ in findings if s == WARN)
     w = stream.write
-    w("\n" + "=" * 78 + "\n  DECEPTICON WAF — preflight\n" + "=" * 78 + "\n")
+    w("\n" + "=" * 78 + "\n  MIRAGE WAF — preflight\n" + "=" * 78 + "\n")
     for sev, title, detail in findings:
         tag = {CRITICAL: "[CRITICAL]", WARN: "[WARN]    ", INFO: "[info]    ", OK: "[ok]      "}[sev]
         w(f"{tag} {title}\n")

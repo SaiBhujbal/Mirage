@@ -7,18 +7,18 @@ import requests
 # Add root directory to path to import from integrations
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from integrations.example_integration import DecepticonMLClient, CustomWAF
+from integrations.example_integration import MirageMLClient, CustomWAF
 
 @pytest.fixture
 def ml_client():
-    return DecepticonMLClient(api_url="http://test-api")
+    return MirageMLClient(api_url="http://test-api")
 
 @pytest.fixture
 def custom_waf():
-    with patch('integrations.example_integration.DecepticonMLClient.health_check', return_value=True):
+    with patch('integrations.example_integration.MirageMLClient.health_check', return_value=True):
         return CustomWAF()
 
-# DecepticonMLClient tests
+# MirageMLClient tests
 def test_analyze_request_success(ml_client):
     mock_response = MagicMock()
     mock_response.status_code = 200
@@ -139,7 +139,7 @@ def test_custom_waf_statistics(custom_waf):
             assert stats["ml_baseline"] == {"baseline": "info"}
 
 def test_custom_waf_init_health_check_failure():
-    with patch('integrations.example_integration.DecepticonMLClient.health_check', return_value=False):
+    with patch('integrations.example_integration.MirageMLClient.health_check', return_value=False):
         with patch('builtins.print') as mock_print:
             waf = CustomWAF()
-            mock_print.assert_any_call("⚠️ WARNING: DECEPTICON ML API is not responding")
+            mock_print.assert_any_call("⚠️ WARNING: MIRAGE ML API is not responding")

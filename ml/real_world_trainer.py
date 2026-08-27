@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-DECEPTICON Real-World Generalized Trainer
+MIRAGE Real-World Generalized Trainer
 ==========================================
 Naval SWAVLAMBAN 2025 Challenge 3
 
@@ -17,7 +17,7 @@ Features:
 - Anti-overfitting: noise injection, augmentation
 - Cross-validation for robust evaluation
 
-Author: DECEPTICON Team
+Author: MIRAGE Team
 Date: December 2025
 """
 
@@ -70,7 +70,7 @@ from ml.real_payload_loader import (
 
 warnings.filterwarnings('ignore')
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger("decepticon.real_trainer")
+logger = logging.getLogger("mirage.real_trainer")
 
 
 # ============================================================================
@@ -939,7 +939,7 @@ class RealWorldTrainer:
     
     def _generate_signatures(self):
         """Generate HMAC signatures for model integrity"""
-        key = os.environ.get('MODEL_SIGNING_KEY', 'decepticon-naval-2025').encode()
+        key = os.environ.get('MODEL_SIGNING_KEY', 'mirage-naval-2025').encode()
         signatures = {}
         
         for f in self.models_dir.glob('*'):
@@ -962,7 +962,7 @@ class RealWorldTrainer:
 def main():
     import argparse
     
-    parser = argparse.ArgumentParser(description='DECEPTICON Real-World Generalized Trainer')
+    parser = argparse.ArgumentParser(description='MIRAGE Real-World Generalized Trainer')
     parser.add_argument('--models-dir', default='./models', help='Models output directory')
     parser.add_argument('--data-dir', default='./data/datasets', help='Network datasets directory')
     parser.add_argument('--payloads-dir', default='./data/payloads', help='Payloads directory (PayloadsAllTheThings, SecLists)')

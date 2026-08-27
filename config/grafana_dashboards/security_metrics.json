@@ -1,6 +1,6 @@
 {
   "dashboard": {
-    "title": "DECEPTICON WAF - Security & Threat Intelligence",
+    "title": "MIRAGE WAF - Security & Threat Intelligence",
     "tags": ["waf", "security", "threats", "attacks"],
     "timezone": "browser",
     "schemaVersion": 38,

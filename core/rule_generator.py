@@ -1,5 +1,5 @@
 """
-DECEPTICON Auto Rule Generator
+MIRAGE Auto Rule Generator
 When ML detects a new attack, automatically generate WAF rules
 So next time, the attack is blocked at pattern level (never reaches ML)
 """

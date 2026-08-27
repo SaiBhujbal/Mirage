@@ -1,5 +1,5 @@
 """
-Slack notifier for DECEPTICON-WAF — alerts to a channel via an Incoming Webhook.
+Slack notifier for MIRAGE-WAF — alerts to a channel via an Incoming Webhook.
 
 Why webhook (not the bot API / MCP): incoming webhooks are the standard alerting primitive —
 a single POST to a secret URL, no broad OAuth scopes, exactly what a monitoring system needs.
@@ -78,7 +78,7 @@ class SlackNotifier:
             blocks.append({"type": "section", "fields": [
                 {"type": "mrkdwn", "text": f"*{k}*\n{v}"[:2000]} for k, v in list(fields.items())[:10]]})
         blocks.append({"type": "context", "elements": [
-            {"type": "mrkdwn", "text": f"DECEPTICON-WAF · {time.strftime('%Y-%m-%d %H:%M:%S %Z')}"}]})
+            {"type": "mrkdwn", "text": f"MIRAGE-WAF · {time.strftime('%Y-%m-%d %H:%M:%S %Z')}"}]})
         return {"attachments": [{"color": SEV_COLOR.get(severity, "#666"), "blocks": blocks}]}
 
     def _post(self, payload: dict) -> dict:

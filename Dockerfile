@@ -1,5 +1,5 @@
 # =============================================
-# DECEPTICON ML-WAF Docker Image
+# MIRAGE ML-WAF Docker Image
 # =============================================
 # Multi-stage build for minimal image size
 # Optimized for runtime (training data excluded via .dockerignore)

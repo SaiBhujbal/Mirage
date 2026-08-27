@@ -1,5 +1,5 @@
 """
-DECEPTICON ML-WAF Configuration
+MIRAGE ML-WAF Configuration
 Ultra-low latency settings with defense-in-depth
 """
 from pydantic_settings import BaseSettings

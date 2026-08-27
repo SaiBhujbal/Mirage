@@ -1,5 +1,5 @@
 """
-Tests for DECEPTICON Secure Session Manager
+Tests for MIRAGE Secure Session Manager
 """
 import time
 import os
@@ -234,7 +234,7 @@ def run_all_tests():
     results = {"passed": 0, "failed": 0, "errors": []}
 
     print("\n" + "="*70)
-    print("DECEPTICON Secure Session Test Suite")
+    print("MIRAGE Secure Session Test Suite")
     print("="*70 + "\n")
 
     for test_class in test_classes:

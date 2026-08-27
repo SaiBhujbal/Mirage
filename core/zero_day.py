@@ -1,5 +1,5 @@
 """
-DECEPTICON Zero-Day Detection & Auto-Rule Generation
+MIRAGE Zero-Day Detection & Auto-Rule Generation
 Detect unknown attacks and automatically generate rules
 """
 import time
@@ -72,7 +72,7 @@ SecRule {targets} "@rx {escaped_pattern}" \\
     block,\\
     t:none,t:urlDecodeUni,\\
     msg:'Auto-generated rule - {self.category}',\\
-    tag:'decepticon-auto',\\
+    tag:'mirage-auto',\\
     tag:'{self.category.lower()}',\\
     severity:'CRITICAL'"
 '''
@@ -372,7 +372,7 @@ class RuleGenerator:
     def export_modsecurity_rules(self) -> str:
         """Export all active rules as ModSecurity config"""
         rules = []
-        rules.append("# DECEPTICON Auto-Generated Rules")
+        rules.append("# MIRAGE Auto-Generated Rules")
         rules.append(f"# Generated: {time.strftime('%Y-%m-%d %H:%M:%S')}")
         rules.append("")
         

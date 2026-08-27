@@ -44,7 +44,7 @@ from dataclasses import dataclass, field, asdict
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
-logger = logging.getLogger("decepticon.threatintel.tavily")
+logger = logging.getLogger("mirage.threatintel.tavily")
 
 TAVILY_ENDPOINT = "https://api.tavily.com/search"
 _ROOT = Path(__file__).resolve().parent.parent

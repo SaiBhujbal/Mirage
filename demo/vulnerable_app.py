@@ -68,7 +68,7 @@ def waf_layer():
             f'{{"error":"Request blocked by WAF","category":"{d.category}",'
             f'"severity":{d.severity},"layer":"{d.layer}"}}',
             status=403, mimetype="application/json",
-            headers={"X-WAF": "DECEPTICON", "X-WAF-Block": d.category,
+            headers={"X-WAF": "MIRAGE", "X-WAF-Block": d.category,
                      "X-WAF-Latency-ms": str(d.latency_ms)})
     return None
 

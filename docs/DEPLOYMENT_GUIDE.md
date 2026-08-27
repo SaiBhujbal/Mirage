@@ -1,4 +1,4 @@
-# DECEPTICON WAF - Production Deployment Guide
+# MIRAGE WAF - Production Deployment Guide
 
 ## Table of Contents
 
@@ -19,7 +19,7 @@
 
 ## Overview
 
-This guide covers deploying DECEPTICON ML-WAF in a production environment with:
+This guide covers deploying MIRAGE ML-WAF in a production environment with:
 
 - **Docker Compose orchestration** - Multi-container architecture
 - **Prometheus metrics** - Real-time performance monitoring
@@ -30,7 +30,7 @@ This guide covers deploying DECEPTICON ML-WAF in a production environment with:
 **Architecture:**
 ```
 ┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│   Client    │────▶│  Reverse    │────▶│  DECEPTICON │
+│   Client    │────▶│  Reverse    │────▶│  MIRAGE │
 │  Requests   │     │   Proxy     │     │     WAF     │
 └─────────────┘     └─────────────┘     └──────┬──────┘
                                                │
@@ -121,8 +121,8 @@ sudo ufw deny 9090
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/decepticon-waf.git
-cd decepticon-waf
+git clone https://github.com/your-org/mirage-waf.git
+cd mirage-waf
 
 # Verify integrity (optional but recommended)
 git verify-commit HEAD
@@ -136,7 +136,7 @@ git verify-commit HEAD
 # Create secret generation script
 cat > generate_secrets.sh << 'EOF'
 #!/bin/bash
-echo "# DECEPTICON WAF Secrets - Generated $(date)"
+echo "# MIRAGE WAF Secrets - Generated $(date)"
 echo "# SAVE THIS OUTPUT SECURELY!"
 echo ""
 
@@ -144,7 +144,7 @@ echo ""
 ADMIN_KEY=$(python3 -c "import secrets; print(secrets.token_urlsafe(32))")
 ADMIN_KEY_HASH=$(echo -n "$ADMIN_KEY" | python3 -c "import hashlib, sys; print(hashlib.sha256(sys.stdin.read().encode()).hexdigest())")
 echo "# Admin Key (SAVE THIS): $ADMIN_KEY"
-echo "DECEPTICON_ADMIN_KEY_HASH=$ADMIN_KEY_HASH"
+echo "MIRAGE_ADMIN_KEY_HASH=$ADMIN_KEY_HASH"
 echo ""
 
 # Model signing key
@@ -268,9 +268,9 @@ services:
 **Nginx Example:**
 
 ```nginx
-# /etc/nginx/sites-available/decepticon-waf
+# /etc/nginx/sites-available/mirage-waf
 
-upstream decepticon_backend {
+upstream mirage_backend {
     server 127.0.0.1:8080;
     keepalive 32;
 }
@@ -298,7 +298,7 @@ server {
 
     # WAF API
     location /api/ {
-        proxy_pass http://decepticon_backend;
+        proxy_pass http://mirage_backend;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
@@ -316,7 +316,7 @@ server {
 
     # Health check (no auth)
     location /api/waf/health {
-        proxy_pass http://decepticon_backend;
+        proxy_pass http://mirage_backend;
         access_log off;
     }
 
@@ -324,7 +324,7 @@ server {
     location /metrics {
         allow 10.0.0.0/8;  # Internal network only
         deny all;
-        proxy_pass http://decepticon_backend;
+        proxy_pass http://mirage_backend;
     }
 }
 
@@ -339,7 +339,7 @@ server {
 **Enable Nginx configuration:**
 
 ```bash
-sudo ln -s /etc/nginx/sites-available/decepticon-waf /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/mirage-waf /etc/nginx/sites-enabled/
 sudo nginx -t
 sudo systemctl reload nginx
 ```
@@ -365,10 +365,10 @@ docker-compose -f docker-compose.production.yml ps
 
 # Expected output:
 # NAME                      STATUS          PORTS
-# decepticon-waf            Up (healthy)    0.0.0.0:8080->8080/tcp
-# decepticon-redis          Up (healthy)
-# decepticon-prometheus     Up (healthy)
-# decepticon-grafana        Up (healthy)    0.0.0.0:3000->3000/tcp
+# mirage-waf            Up (healthy)    0.0.0.0:8080->8080/tcp
+# mirage-redis          Up (healthy)
+# mirage-prometheus     Up (healthy)
+# mirage-grafana        Up (healthy)    0.0.0.0:3000->3000/tcp
 ```
 
 ### Verify Deployment
@@ -380,7 +380,7 @@ curl http://localhost:8080/api/waf/health
 # Expected: {"status": "healthy", "timestamp": "..."}
 
 # Check Prometheus
-docker exec decepticon-prometheus wget -qO- http://localhost:9090/-/healthy
+docker exec mirage-prometheus wget -qO- http://localhost:9090/-/healthy
 
 # Expected: Prometheus is Healthy.
 
@@ -390,7 +390,7 @@ curl http://localhost:3000/api/health
 # Expected: {"database": "ok", "version": "..."}
 
 # Check Redis
-docker exec decepticon-redis redis-cli -a "$REDIS_PASSWORD" ping
+docker exec mirage-redis redis-cli -a "$REDIS_PASSWORD" ping
 
 # Expected: PONG
 ```
@@ -437,7 +437,7 @@ Access Prometheus UI (internal only):
 
 ```bash
 # Port forward for local access
-docker exec -it decepticon-prometheus wget -qO- http://localhost:9090
+docker exec -it mirage-prometheus wget -qO- http://localhost:9090
 
 # Or expose temporarily (NOT recommended for production)
 # Uncomment ports in docker-compose.production.yml
@@ -495,7 +495,7 @@ if [ "$WAF_HEALTH" != "healthy" ]; then
 fi
 
 # Prometheus health
-PROM_HEALTH=$(docker exec decepticon-prometheus wget -qO- http://localhost:9090/-/healthy 2>/dev/null)
+PROM_HEALTH=$(docker exec mirage-prometheus wget -qO- http://localhost:9090/-/healthy 2>/dev/null)
 if [ "$PROM_HEALTH" != "Prometheus is Healthy." ]; then
     echo "ERROR: Prometheus is unhealthy"
     exit 1
@@ -509,7 +509,7 @@ if [ "$GRAFANA_HEALTH" != "ok" ]; then
 fi
 
 # Redis health
-REDIS_HEALTH=$(docker exec decepticon-redis redis-cli -a "$REDIS_PASSWORD" ping 2>/dev/null)
+REDIS_HEALTH=$(docker exec mirage-redis redis-cli -a "$REDIS_PASSWORD" ping 2>/dev/null)
 if [ "$REDIS_HEALTH" != "PONG" ]; then
     echo "ERROR: Redis is unhealthy"
     exit 1
@@ -638,7 +638,7 @@ docker-compose -f docker-compose.production.yml ps redis
 docker-compose -f docker-compose.production.yml logs redis
 
 # Test connection
-docker exec decepticon-redis redis-cli -a "$REDIS_PASSWORD" ping
+docker exec mirage-redis redis-cli -a "$REDIS_PASSWORD" ping
 ```
 
 #### 3. ML Model Not Loading
@@ -651,7 +651,7 @@ ls -lh models/
 docker-compose -f docker-compose.production.yml logs waf | grep -i "model"
 
 # Test model manually
-docker exec -it decepticon-waf python3 -c "from ml.dual_layer_inference import DualLayerPredictor; p = DualLayerPredictor(); print('OK')"
+docker exec -it mirage-waf python3 -c "from ml.dual_layer_inference import DualLayerPredictor; p = DualLayerPredictor(); print('OK')"
 ```
 
 #### 4. High Latency
@@ -660,10 +660,10 @@ docker exec -it decepticon-waf python3 -c "from ml.dual_layer_inference import D
 # Check Grafana "ML Performance" dashboard
 
 # Run performance benchmark
-docker exec -it decepticon-waf python3 ml/performance_optimizer.py
+docker exec -it mirage-waf python3 ml/performance_optimizer.py
 
 # Check resource limits
-docker stats decepticon-waf
+docker stats mirage-waf
 
 # Increase workers/resources if needed
 ```
@@ -672,10 +672,10 @@ docker stats decepticon-waf
 
 ```bash
 # Check provisioning
-docker exec decepticon-grafana ls -la /etc/grafana/provisioning/dashboards/json/
+docker exec mirage-grafana ls -la /etc/grafana/provisioning/dashboards/json/
 
 # Verify datasource
-docker exec decepticon-grafana curl -s http://prometheus:9090/api/v1/status/config
+docker exec mirage-grafana curl -s http://prometheus:9090/api/v1/status/config
 
 # Restart Grafana
 docker-compose -f docker-compose.production.yml restart grafana
@@ -722,17 +722,17 @@ docker-compose -f docker-compose.production.yml restart waf
 #!/bin/bash
 # backup.sh
 
-BACKUP_DIR="/backups/decepticon-$(date +%Y%m%d_%H%M%S)"
+BACKUP_DIR="/backups/mirage-$(date +%Y%m%d_%H%M%S)"
 mkdir -p "$BACKUP_DIR"
 
 # Backup volumes
-docker run --rm -v decepticon-waf_redis-data:/data \
+docker run --rm -v mirage-waf_redis-data:/data \
   -v "$BACKUP_DIR":/backup alpine tar czf /backup/redis-data.tar.gz /data
 
-docker run --rm -v decepticon-waf_prometheus-data:/prometheus \
+docker run --rm -v mirage-waf_prometheus-data:/prometheus \
   -v "$BACKUP_DIR":/backup alpine tar czf /backup/prometheus-data.tar.gz /prometheus
 
-docker run --rm -v decepticon-waf_grafana-data:/var/lib/grafana \
+docker run --rm -v mirage-waf_grafana-data:/var/lib/grafana \
   -v "$BACKUP_DIR":/backup alpine tar czf /backup/grafana-data.tar.gz /var/lib/grafana
 
 # Backup configuration
@@ -755,7 +755,7 @@ BACKUP_DIR="$1"
 docker-compose -f docker-compose.production.yml down
 
 # Restore volumes
-docker run --rm -v decepticon-waf_redis-data:/data \
+docker run --rm -v mirage-waf_redis-data:/data \
   -v "$BACKUP_DIR":/backup alpine sh -c "cd /data && tar xzf /backup/redis-data.tar.gz --strip 1"
 
 # Restore configuration
@@ -772,7 +772,7 @@ echo "Restore complete"
 ### Log Rotation
 
 ```bash
-# /etc/logrotate.d/docker-decepticon
+# /etc/logrotate.d/docker-mirage
 
 /var/lib/docker/containers/*/*.log {
     rotate 7
@@ -784,7 +784,7 @@ echo "Restore complete"
     create 0644 root root
     maxsize 100M
     postrotate
-        docker kill --signal=USR1 decepticon-waf 2>/dev/null || true
+        docker kill --signal=USR1 mirage-waf 2>/dev/null || true
     endscript
 }
 ```
@@ -822,20 +822,20 @@ echo "Restore complete"
 4. **Regular Security Scans:**
    ```bash
    # Scan Docker images
-   docker scan decepticon-waf
+   docker scan mirage-waf
 
    # Check for vulnerabilities
-   trivy image decepticon-waf:latest
+   trivy image mirage-waf:latest
    ```
 
 5. **Implement Fail2Ban:**
    ```bash
-   # /etc/fail2ban/jail.d/decepticon.conf
-   [decepticon-waf]
+   # /etc/fail2ban/jail.d/mirage.conf
+   [mirage-waf]
    enabled = true
    port = 8080
-   filter = decepticon
-   logpath = /var/log/decepticon/access.log
+   filter = mirage
+   logpath = /var/log/mirage/access.log
    maxretry = 5
    bantime = 3600
    ```

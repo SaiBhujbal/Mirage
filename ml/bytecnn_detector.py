@@ -23,7 +23,7 @@ import numpy as np
 from ml.detector_v2 import MLResult, serving_contract_hash
 from ml.canonical_features import lexical_features, byte_sequence
 
-logger = logging.getLogger("decepticon.ml.bytecnn")
+logger = logging.getLogger("mirage.ml.bytecnn")
 _DIR = Path(__file__).resolve().parent.parent / "models_v2"
 
 

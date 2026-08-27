@@ -4,7 +4,7 @@
 API_URL="http://localhost:8080/api/waf/analyze"
 
 echo "╔════════════════════════════════════════╗"
-echo "║  DECEPTICON 4-LAYER DEFENSE TEST      ║"
+echo "║  MIRAGE 4-LAYER DEFENSE TEST      ║"
 echo "╚════════════════════════════════════════╝"
 echo ""
 

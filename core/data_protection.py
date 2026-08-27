@@ -1,5 +1,5 @@
 """
-DECEPTICON Sensitive Data Protection
+MIRAGE Sensitive Data Protection
 Last line of defense - ensures attackers NEVER get sensitive data
 Even if WAF is bypassed, this layer protects the crown jewels
 """

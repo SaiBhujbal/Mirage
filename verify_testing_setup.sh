@@ -2,7 +2,7 @@
 # Verify Testing Setup - Check all test files are in place
 
 echo "╔════════════════════════════════════════════════════════════╗"
-echo "║      DECEPTICON WAF - Testing Setup Verification         ║"
+echo "║      MIRAGE WAF - Testing Setup Verification         ║"
 echo "╚════════════════════════════════════════════════════════════╝"
 echo ""
 

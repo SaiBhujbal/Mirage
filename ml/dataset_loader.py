@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-DECEPTICON Dataset Loader
+MIRAGE Dataset Loader
 =========================
 Naval SWAVLAMBAN 2025 Challenge 3
 
@@ -11,7 +11,7 @@ Comprehensive loader for real-world security datasets:
 - UNSW-NB15 (Network Attacks)
 - CTU-13 (Botnet Traffic)
 
-Author: DECEPTICON Team
+Author: MIRAGE Team
 Date: December 2025
 """
 
@@ -36,7 +36,7 @@ from sklearn.model_selection import train_test_split
 
 warnings.filterwarnings('ignore')
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger("decepticon.datasets")
+logger = logging.getLogger("mirage.datasets")
 
 
 # ============================================================================
@@ -828,7 +828,7 @@ class SyntheticDataGenerator:
 # ============================================================================
 
 if __name__ == '__main__':
-    print("DECEPTICON Dataset Loader")
+    print("MIRAGE Dataset Loader")
     print("=" * 60)
     
     loader = DatasetLoader(data_dir='./data/datasets')

@@ -1,6 +1,6 @@
 {
   "dashboard": {
-    "title": "DECEPTICON WAF - ML Performance & Quality",
+    "title": "MIRAGE WAF - ML Performance & Quality",
     "tags": ["waf", "ml", "performance", "accuracy"],
     "timezone": "browser",
     "schemaVersion": 38,

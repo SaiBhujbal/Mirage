@@ -1,5 +1,5 @@
 """
-DECEPTICON Atomic Rate Limiter
+MIRAGE Atomic Rate Limiter
 FIXES: Race Condition in Rate Limiting (HIGH)
 
 SECURITY MEASURES:
@@ -16,7 +16,7 @@ from dataclasses import dataclass, field
 from collections import defaultdict
 import hashlib
 
-logger = logging.getLogger("decepticon.security.rate_limiter")
+logger = logging.getLogger("mirage.security.rate_limiter")
 
 
 class RateLimitResult(NamedTuple):

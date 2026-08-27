@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-DECEPTICON WAF - Quick Test Suite (Python Version)
+MIRAGE WAF - Quick Test Suite (Python Version)
 Works on Windows without jq/bc dependencies
 """
 
@@ -181,7 +181,7 @@ def test_compliance() -> Tuple[int, int]:
 
 def main():
     """Run all tests"""
-    print_header("DECEPTICON WAF - Quick Test Suite")
+    print_header("MIRAGE WAF - Quick Test Suite")
 
     # Check WAF health
     if not check_waf_health():
@@ -217,7 +217,7 @@ def main():
     print(f"\nOverall: {total_passed}/{total_tests} ({overall_rate}%)")
 
     if overall_rate >= 80:
-        print("\n[SUCCESS] DECEPTICON WAF IS OPERATIONAL")
+        print("\n[SUCCESS] MIRAGE WAF IS OPERATIONAL")
         print("\nKey Features:")
         print("  - ML-based attack detection")
         print("  - Sub-5ms latency")

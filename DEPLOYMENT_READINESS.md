@@ -1,4 +1,4 @@
-# Decepticon-WAF — Deployment Readiness
+# Mirage-WAF — Deployment Readiness
 
 Status of the hardening + audit pass. Read this before pushing/deploying.
 

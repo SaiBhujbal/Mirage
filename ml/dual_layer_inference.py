@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-DECEPTICON Dual-Layer Inference
+MIRAGE Dual-Layer Inference
 ===============================
 Naval SWAVLAMBAN 2025 Challenge 3
 
@@ -9,7 +9,7 @@ Secure inference using dual-layer ensemble:
 - Layer 2: Network Flow Analysis  
 - Meta-Ensemble: Combines both layers
 
-Author: DECEPTICON Team
+Author: MIRAGE Team
 Date: December 2025
 """
 
@@ -39,7 +39,7 @@ except ImportError:
 # Import feature extractor
 from ml.dataset_loader import HTTPFeatureExtractor
 
-logger = logging.getLogger("decepticon.dual_inference")
+logger = logging.getLogger("mirage.dual_inference")
 
 
 # ============================================================================
@@ -717,7 +717,7 @@ def is_malicious(payload: str, threshold: float = 0.5) -> bool:
 # ============================================================================
 
 if __name__ == '__main__':
-    print("DECEPTICON Dual-Layer Predictor")
+    print("MIRAGE Dual-Layer Predictor")
     print("=" * 60)
     
     predictor = DualLayerPredictor(models_dir="./models")

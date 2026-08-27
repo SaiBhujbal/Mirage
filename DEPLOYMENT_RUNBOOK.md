@@ -1,4 +1,4 @@
-# Decepticon WAF — Go-Live Runbook
+# Mirage WAF — Go-Live Runbook
 
 A staged path from install to full enforcement. The governing principle, learned the hard way:
 **a passing harness proves the WAF blocks known attacks with zero FP *on a 21-sample corpus*; it

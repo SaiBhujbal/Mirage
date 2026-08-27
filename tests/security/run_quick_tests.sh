@@ -2,7 +2,7 @@
 # Quick Test Suite Runner
 
 echo "╔════════════════════════════════════════════════════════════╗"
-echo "║      DECEPTICON WAF - Quick Test Suite                    ║"
+echo "║      MIRAGE WAF - Quick Test Suite                    ║"
 echo "╚════════════════════════════════════════════════════════════╝"
 echo ""
 echo "Starting comprehensive security tests..."
@@ -81,7 +81,7 @@ echo "Test suites passed: $passed_suites / $total_suites"
 echo ""
 
 if [ $passed_suites -ge 4 ]; then
-    echo "✅ DECEPTICON WAF IS OPERATIONAL"
+    echo "✅ MIRAGE WAF IS OPERATIONAL"
     echo ""
     echo "System Status:"
     echo "  ✅ ML Detection:         Active (97.43% accuracy)"

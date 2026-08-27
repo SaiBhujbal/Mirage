@@ -20,7 +20,7 @@ from data_pipeline.cwe_map import CWE_TO_CATEGORY
 RAW = Path(__file__).resolve().parent.parent / "data" / "corpus" / "raw" / "nuclei"
 RAW.mkdir(parents=True, exist_ok=True)
 CTX = ssl.create_default_context()
-UA = {"User-Agent": "decepticon-pipeline/1.0"}
+UA = {"User-Agent": "mirage-pipeline/1.0"}
 
 
 def _get(url, timeout=30):

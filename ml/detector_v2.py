@@ -39,7 +39,7 @@ from ml.canonical_features import lexical_features, LEXICAL_FEATURE_NAMES
 
 _DIR = Path(__file__).resolve().parent.parent / "models_v2"
 
-logger = logging.getLogger("decepticon.ml.detector_v2")
+logger = logging.getLogger("mirage.ml.detector_v2")
 
 # High-confidence gate for ENFORCEMENT (blocking), deliberately well above the
 # detection threshold `mal_t`. Detection at 0.5 with a ~5% FP rate is fine to

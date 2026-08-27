@@ -1,5 +1,5 @@
 """
-DECEPTICON Feature Extraction Pipeline
+MIRAGE Feature Extraction Pipeline
 Optimized for real-time feature computation
 Target: < 0.5ms for feature extraction
 """

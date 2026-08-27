@@ -1,4 +1,4 @@
-# DECEPTICON ML-WAF Dependencies
+# MIRAGE ML-WAF Dependencies
 # Naval SWAVLAMBAN 2025 Challenge 3
 
 # Core

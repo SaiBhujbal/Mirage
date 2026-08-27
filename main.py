@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-DECEPTICON ML-WAF
+MIRAGE ML-WAF
 Ultra-low latency Web Application Firewall with ML-powered detection
 
 SECURITY HARDENED - v2.0.0
@@ -40,7 +40,7 @@ def run_server():
     print("""
     ================================================================
 
-                    DECEPTICON ML-WAF
+                    MIRAGE ML-WAF
                  ML-Powered WAF v2.0.0-SECURE
 
     ================================================================
@@ -55,7 +55,7 @@ def run_tests():
 
 def run_benchmark():
     """Run performance benchmark"""
-    print("\n[BENCHMARK] DECEPTICON Performance Benchmark\n")
+    print("\n[BENCHMARK] MIRAGE Performance Benchmark\n")
     print("="*60)
     
     from core.waf_engine import WAFEngine
@@ -188,7 +188,7 @@ def run_demo():
     """Run interactive demo"""
     print("""
     ╔═══════════════════════════════════════════════════════════════╗
-    ║           DECEPTICON WAF Interactive Demo                     ║
+    ║           MIRAGE WAF Interactive Demo                     ║
     ╚═══════════════════════════════════════════════════════════════╝
     
     This demo shows the WAF detecting various attack types.
@@ -323,7 +323,7 @@ def run_attack_test(waf=None):
     Returns:
         dict: Test results with category-wise rates and overall status
     """
-    print("\n🔴 DECEPTICON Attack Detection Test\n")
+    print("\n🔴 MIRAGE Attack Detection Test\n")
     
     # Define payloads inline to avoid test_waf imports
     SQLI_PAYLOADS = [
@@ -443,7 +443,7 @@ def run_attack_test(waf=None):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="DECEPTICON ML-WAF",
+        description="MIRAGE ML-WAF",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-DECEPTICON Comprehensive Model Trainer
+MIRAGE Comprehensive Model Trainer
 ======================================
 Naval SWAVLAMBAN 2025 Challenge 3
 
@@ -10,7 +10,7 @@ Trains ML models on ALL attack types using real payloads:
 - Evasion technique augmentation
 - Anti-overfitting measures
 
-Author: DECEPTICON Team
+Author: MIRAGE Team
 Date: December 2025
 Security: No pickle, no eval, safe operations only
 """
@@ -34,7 +34,7 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
-logger = logging.getLogger("decepticon.trainer")
+logger = logging.getLogger("mirage.trainer")
 
 # Add parent to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -275,7 +275,7 @@ class ComprehensiveTrainer:
     
     def train(self) -> bool:
         logger.info("=" * 60)
-        logger.info("DECEPTICON Comprehensive Model Training")
+        logger.info("MIRAGE Comprehensive Model Training")
         logger.info("=" * 60)
         
         start_time = datetime.now()
@@ -308,7 +308,7 @@ class ComprehensiveTrainer:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="DECEPTICON Model Trainer")
+    parser = argparse.ArgumentParser(description="MIRAGE Model Trainer")
     parser.add_argument('--models-dir', type=str, default='models')
     parser.add_argument('--evasion-ratio', type=float, default=0.4)
     parser.add_argument('--noise-ratio', type=float, default=0.05)

@@ -1,6 +1,6 @@
 <div align="center">
 
-# DECEPTICON WAF
+# MIRAGE WAF
 
 **A layered Web Application Firewall with a closed-loop, human-gated MLOps pipeline for zero-day detection.**
 
@@ -111,7 +111,7 @@ curl http://127.0.0.1:8080/metrics       # Prometheus exposition
 > decisions are recorded in the `X-WAF-Shadow-WouldBlock` header and `/waf/stats`. See
 > [§10.1 Rollout runbook](#101-runbook-safe-rollout-shadow--enforce).
 
-**More:** [`demo/DEMO_RUNBOOK.md`](demo/DEMO_RUNBOOK.md) ·
+**More:** `demo/DEMO_RUNBOOK.md` ·
 [animated walkthrough of every layer](https://claude.ai/code/artifact/201dc756-4075-4174-a735-e252115857a0)
 
 ---
@@ -136,7 +136,7 @@ a DDoS scrubber, a bot-management product, a RASP agent, or an authorization sys
 
 Full diagram set — C4 context/container, request sequence, MLOps control loop, data lineage,
 canary state machine, trust boundaries, deployment topology — in
-**[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**.
+**docs/ARCHITECTURE.md**.
 
 ```mermaid
 graph LR
@@ -244,7 +244,7 @@ real security argument). Below, each layer has (1) a **recorded demo GIF**, and 
 diagram that renders live on GitHub** — so the walkthrough is readable even before the GIFs are
 dropped in.
 
-> **About the GIFs.** They live in [`docs/gifs/`](docs/gifs/). Record them against the running
+> **About the GIFs.** They live in `docs/gifs/`. Record them against the running
 > demo ([§1](#1-quick-start-5-minutes)) — any terminal recorder works
 > ([`vhs`](https://github.com/charmbracelet/vhs), `asciinema` + `agg`, or a screen capture of the
 > browser). Each layer below gives the exact request that triggers it; run it against `:8080` and
@@ -252,7 +252,6 @@ dropped in.
 
 ### L1 — Rate limit (per-IP sliding window) → `429`
 
-![L1 rate limit throttling a burst](docs/gifs/l1-rate-limit.gif)
 
 ```mermaid
 sequenceDiagram
@@ -269,7 +268,6 @@ sequenceDiagram
 
 ### L2 — Signatures (185 OWASP-mapped rules, **enforces**) → `403`
 
-![L2 signatures blocking a SQL injection](docs/gifs/l2-signatures.gif)
 
 ```mermaid
 sequenceDiagram
@@ -285,7 +283,6 @@ sequenceDiagram
 
 ### L3 — Advanced heuristics (XXE / SSTI / SSRF / encoding depth) → `403`
 
-![L3 advanced blocking template injection](docs/gifs/l3-advanced.gif)
 
 ```mermaid
 sequenceDiagram
@@ -299,7 +296,6 @@ sequenceDiagram
 
 ### L4 — ML ensemble (**shadow** by default) → observes, sets a would-block header
 
-![L4 ML flagging in shadow mode](docs/gifs/l4-ml-shadow.gif)
 
 ```mermaid
 sequenceDiagram
@@ -316,7 +312,6 @@ sequenceDiagram
 
 ### L5 — Open-set novelty → 🕸️ **honeypot + capture** (no `403`)
 
-![L5 novelty routing a zero-day to the honeypot](docs/gifs/l5-novelty-honeypot.gif)
 
 ```mermaid
 sequenceDiagram
@@ -563,11 +558,11 @@ services:
 ### 6.2 Behind nginx / a load balancer
 
 ```nginx
-upstream decepticon { server 127.0.0.1:8080; }
+upstream mirage { server 127.0.0.1:8080; }
 server {
     listen 443 ssl;
     location / {
-        proxy_pass http://decepticon;
+        proxy_pass http://mirage;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;  # REQUIRED
         proxy_set_header X-Real-IP       $remote_addr;
         proxy_set_header Host            $host;
@@ -583,7 +578,7 @@ server {
 ```yaml
 containers:
   - name: waf
-    image: decepticon-waf:latest
+    image: mirage-waf:latest
     args: ["python","-m","waf.server"]
     env:
       - {name: UPSTREAM_URL, value: "http://127.0.0.1:8000"}
@@ -594,11 +589,11 @@ containers:
     volumeMounts: [{name: captures, mountPath: /app/data/corpus}]   # RWX across replicas
 ```
 
-Helm chart scaffold: `deploy/helm/decepticon-waf/`.
+Helm chart scaffold: `deploy/helm/mirage-waf/`.
 
 ### 6.4 Alongside an existing WAF (ModSecurity / cloud WAF)
 
-Run DECEPTICON **behind** your existing WAF in `shadow`. Your incumbent keeps enforcing; this
+Run MIRAGE **behind** your existing WAF in `shadow`. Your incumbent keeps enforcing; this
 adds the novelty/honeypot/MLOps layer and reports what it *would* have caught. That comparison
 is the cleanest way to justify (or reject) adoption.
 
@@ -908,13 +903,13 @@ precision ≈ 8% (Axelsson's base-rate fallacy). Any WAF-ML claim ignoring base 
 5. **Rate limiting is per-instance, in-memory.** Multi-instance needs Redis; not built.
 6. **The ML algorithm is not novel.** The contribution is evaluation honesty and the MLOps
    safety chain. Contrastive learning and conformal OOD are prior art — see
-   [ml/RESEARCH_DESIGN.md](ml/RESEARCH_DESIGN.md).
+   ml/RESEARCH_DESIGN.md.
 7. **Alertmanager routing not wired**; Slack is webhook-only and dry-run unless configured.
 8. **The MLOps runner is one-shot** — you schedule it (cron / Task Scheduler).
 9. **`demo/novabank.py` is deliberately vulnerable.** Never deploy it.
 
 Full 11-item blind-spot register with per-layer backstops:
-[ml/SHIPPABLE_THREAT_MODEL.md](ml/SHIPPABLE_THREAT_MODEL.md)
+ml/SHIPPABLE_THREAT_MODEL.md
 
 ---
 
@@ -1030,7 +1025,7 @@ LEGACY.md                 what is deliberately kept and NOT the WAF — read bef
 > **⚠️ Two engines live in this repo.** `waf/` is the working system. `core/waf_engine.py` and
 > `ml/secure_inference.py` are the **legacy, provably-broken** path, retained only because the
 > README's central finding (train/serve skew) is verifiable against them. Both carry a banner
-> header; full explanation and a one-command reproduction in **[LEGACY.md](LEGACY.md)**.
+> header; full explanation and a one-command reproduction in **LEGACY.md**.
 >
 > **The model actually served is 2.55 MB:** `models_v2/csic_classifier.json` (XGBoost on real
 > CSIC-2010) + `csic_maha.npz` (Mahalanobis novelty) + scaler, selected via

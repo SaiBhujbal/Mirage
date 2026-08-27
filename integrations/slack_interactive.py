@@ -191,7 +191,7 @@ class SlackInteractive:
         except Exception as e:
             log.error("slack interactive: reply failed: %s", e)
 
-    def post(self, channel: str, blocks: List[Dict], text: str = "DECEPTICON-WAF") -> Optional[str]:
+    def post(self, channel: str, blocks: List[Dict], text: str = "MIRAGE-WAF") -> Optional[str]:
         if not self.enabled or not self._client:
             return None
         try:

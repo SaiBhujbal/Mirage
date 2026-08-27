@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
 """
-Example Integration: DECEPTICON ML with Custom WAF
-Demonstrates how to integrate DECEPTICON ML module with any WAF
+Example Integration: MIRAGE ML with Custom WAF
+Demonstrates how to integrate MIRAGE ML module with any WAF
 """
 
 import requests
 import time
 from typing import Dict, Tuple
 
-class DecepticonMLClient:
+class MirageMLClient:
     """
-    Client for integrating with DECEPTICON ML API
+    Client for integrating with MIRAGE ML API
 
     Usage:
-        client = DecepticonMLClient(api_url="http://localhost:5000")
+        client = MirageMLClient(api_url="http://localhost:5000")
         action, details = client.analyze_request(
             method="GET",
             path="/api/users",
@@ -35,7 +35,7 @@ class DecepticonMLClient:
                        body: str = "", headers: Dict = None,
                        source_ip: str = "unknown") -> Tuple[str, Dict]:
         """
-        Analyze HTTP request with DECEPTICON ML
+        Analyze HTTP request with MIRAGE ML
 
         Returns:
             (action, details) where action is "allow", "block", or "challenge"
@@ -148,18 +148,18 @@ class DecepticonMLClient:
 
 class CustomWAF:
     """
-    Example custom WAF using DECEPTICON ML
+    Example custom WAF using MIRAGE ML
     This demonstrates how to integrate ML into your WAF
     """
 
     def __init__(self):
-        self.ml_client = DecepticonMLClient()
+        self.ml_client = MirageMLClient()
         self.blocked_count = 0
         self.allowed_count = 0
 
         # Check ML API health
         if not self.ml_client.health_check():
-            print("⚠️ WARNING: DECEPTICON ML API is not responding")
+            print("⚠️ WARNING: MIRAGE ML API is not responding")
             print("   Falling back to rule-based detection only")
 
     def process_request(self, method: str, path: str, query: str = "",
@@ -171,7 +171,7 @@ class CustomWAF:
             (status_code, message)
         """
 
-        # 1. Call DECEPTICON ML
+        # 1. Call MIRAGE ML
         action, details = self.ml_client.analyze_request(
             method=method,
             path=path,
@@ -220,10 +220,10 @@ class CustomWAF:
 # ============================================================================
 
 def test_integration():
-    """Test DECEPTICON ML integration"""
+    """Test MIRAGE ML integration"""
 
     print("="*70)
-    print("DECEPTICON ML Integration Test")
+    print("MIRAGE ML Integration Test")
     print("="*70)
     print()
 
@@ -294,16 +294,16 @@ def test_integration():
 # ============================================================================
 
 def flask_middleware_example():
-    """Example Flask middleware using DECEPTICON ML"""
+    """Example Flask middleware using MIRAGE ML"""
 
     from flask import Flask, request, jsonify
 
     app = Flask(__name__)
-    ml_client = DecepticonMLClient()
+    ml_client = MirageMLClient()
 
     @app.before_request
     def check_with_ml():
-        """Check every request with DECEPTICON ML"""
+        """Check every request with MIRAGE ML"""
 
         action, details = ml_client.analyze_request(
             method=request.method,
@@ -331,11 +331,11 @@ def nginx_lua_example():
     """Example Nginx Lua code (for reference)"""
 
     lua_code = '''
-    -- DECEPTICON ML Integration (Nginx Lua)
+    -- MIRAGE ML Integration (Nginx Lua)
     local http = require "resty.http"
     local cjson = require "cjson"
 
-    local function check_with_decepticon()
+    local function check_with_mirage()
         local httpc = http.new()
 
         local payload = cjson.encode({
@@ -368,7 +368,7 @@ def nginx_lua_example():
     end
 
     -- Call in access_by_lua_block
-    check_with_decepticon()
+    check_with_mirage()
     '''
 
     print("Nginx Lua Example:")
@@ -377,7 +377,7 @@ def nginx_lua_example():
 
 if __name__ == "__main__":
     print("\n" + "="*70)
-    print("DECEPTICON ML Integration Examples")
+    print("MIRAGE ML Integration Examples")
     print("="*70 + "\n")
 
     print("1. Running integration tests...")

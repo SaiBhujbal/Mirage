@@ -1,4 +1,4 @@
-# Prometheus Configuration for DECEPTICON WAF
+# Prometheus Configuration for MIRAGE WAF
 # Enterprise-grade monitoring setup
 
 global:
@@ -7,7 +7,7 @@ global:
   scrape_timeout: 4s          # Timeout after 4 seconds
 
   external_labels:
-    monitor: 'decepticon-waf'
+    monitor: 'mirage-waf'
     environment: 'production'
     cluster: 'waf-cluster-01'
 

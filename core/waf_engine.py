@@ -11,7 +11,7 @@
 ║  reproducible subject of the project's central finding (train/serve skew).    ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 
-DECEPTICON Main WAF Engine (legacy)
+MIRAGE Main WAF Engine (legacy)
 Ultra-low latency request analysis and decision making
 Target: < 3ms sync path, < 50ms with async enrichment
 """
@@ -121,7 +121,7 @@ except ImportError as e:
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("decepticon.waf")
+logger = logging.getLogger("mirage.waf")
 
 @dataclass
 class LatencyMetrics:

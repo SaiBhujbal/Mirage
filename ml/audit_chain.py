@@ -193,7 +193,7 @@ def t_prom_metrics():
 
 def main():
     print("\n" + "=" * 100)
-    print("HONEST END-TO-END AUDIT — DECEPTICON WAF + MLOps chain")
+    print("HONEST END-TO-END AUDIT — MIRAGE WAF + MLOps chain")
     print("=" * 100)
     print("\n[1] DATA PIPELINE")
     chk("KEV live threat feed -> category weights", t_kev)

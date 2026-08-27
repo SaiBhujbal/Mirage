@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-DECEPTICON Secure ONNX Inference
+MIRAGE Secure ONNX Inference
 ================================
 Naval SWAVLAMBAN 2025 Challenge 3
 
@@ -13,7 +13,7 @@ Security Features:
 - No arbitrary code execution
 - Input validation
 
-Author: DECEPTICON Team
+Author: MIRAGE Team
 Date: December 2025
 """
 
@@ -44,7 +44,7 @@ except ImportError:
     TORCH_AVAILABLE = False
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("decepticon.ml.onnx_inference")
+logger = logging.getLogger("mirage.ml.onnx_inference")
 
 
 # ============================================================================
@@ -683,7 +683,7 @@ def main():
     """Test inference"""
     print("""
     ╔══════════════════════════════════════════════════════════════════╗
-    ║     DECEPTICON Secure ONNX Inference Test                       ║
+    ║     MIRAGE Secure ONNX Inference Test                       ║
     ╚══════════════════════════════════════════════════════════════════╝
     """)
     

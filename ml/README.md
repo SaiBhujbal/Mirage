@@ -1,6 +1,6 @@
 > **Accuracy correction (2026):** Earlier revisions cited **99.84%** ML accuracy — a disproved synthetic-data figure. Measured performance is **97.43% accuracy / 0.44% FP on an offline test set**, and **4.99% false positives on independent CSIC-2010 benign traffic** (see LEGACY.md and ml/RESEARCH_DESIGN.md). ML runs shadow/high-precision by default; figures below are offline test metrics, not production.
 
-# DECEPTICON Adaptive Anomaly Detection System
+# MIRAGE Adaptive Anomaly Detection System
 
 Naval SWAVLAMBAN 2025 - Challenge 3: Adaptive Anomaly Detection
 
@@ -232,7 +232,7 @@ class EnsemblePrediction:
 ## Directory Structure
 
 ```
-decepticon/
+mirage/
 ├── ml/
 │   ├── adaptive_trainer.py    # Training pipeline
 │   ├── secure_ensemble.py     # Secure inference
@@ -256,4 +256,4 @@ Developed for Naval SWAVLAMBAN 2025 Challenge 3.
 
 ## Authors
 
-DECEPTICON Team - December 2025
+MIRAGE Team - December 2025

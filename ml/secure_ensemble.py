@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-DECEPTICON Secure Ensemble Inference
+MIRAGE Secure Ensemble Inference
 ====================================
 Naval SWAVLAMBAN 2025 Challenge 3
 
@@ -13,7 +13,7 @@ Security Features:
 3. Size and path validation
 4. Feature extraction with input sanitization
 
-Author: DECEPTICON Team
+Author: MIRAGE Team
 Date: December 2025
 """
 
@@ -49,7 +49,7 @@ try:
 except ImportError:
     ONNX_AVAILABLE = False
 
-logger = logging.getLogger("decepticon.ml.secure_ensemble")
+logger = logging.getLogger("mirage.ml.secure_ensemble")
 
 
 # ============================================================================
@@ -701,7 +701,7 @@ def is_malicious(payload: str, threshold: float = 0.5) -> bool:
 if __name__ == '__main__':
     import sys
     
-    print("DECEPTICON Secure Ensemble Predictor")
+    print("MIRAGE Secure Ensemble Predictor")
     print("=" * 50)
     
     # Test payloads

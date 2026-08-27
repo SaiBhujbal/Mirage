@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-DECEPTICON WAF - Admin Feedback Dashboard
+MIRAGE WAF - Admin Feedback Dashboard
 Enterprise-grade administrative interface for WAF management
 
 Features:
@@ -138,7 +138,7 @@ OFFLINE_SOURCE = (
 
 # Page configuration
 st.set_page_config(
-    page_title="DECEPTICON WAF - Admin Console",
+    page_title="MIRAGE WAF - Admin Console",
     page_icon="🛡️",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -199,7 +199,7 @@ if "metrics_exporter" not in st.session_state:
 
 # Header
 st.markdown(
-    '<div class="main-header">🛡️ DECEPTICON WAF - Admin Console</div>',
+    '<div class="main-header">🛡️ MIRAGE WAF - Admin Console</div>',
     unsafe_allow_html=True,
 )
 st.markdown(
@@ -1049,7 +1049,7 @@ st.markdown("---")
 st.markdown(
     """
 <div style='text-align: center; color: gray; padding: 1rem;'>
-    <strong>DECEPTICON WAF</strong> v2.0.0-secure |
+    <strong>MIRAGE WAF</strong> v2.0.0-secure |
     Naval SWAVLAMBAN 2025 Challenge 3
 </div>
 """,

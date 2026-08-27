@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-DECEPTICON ML Model Training Pipeline
+MIRAGE ML Model Training Pipeline
 Train attack detection models from labeled datasets
 """
 import os
@@ -682,7 +682,7 @@ class ModelTrainer:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Train DECEPTICON ML models")
+    parser = argparse.ArgumentParser(description="Train MIRAGE ML models")
     
     parser.add_argument("--output-dir", default="./models", help="Output directory for models")
     parser.add_argument("--dataset", help="Path to existing CSV dataset (optional)")
@@ -693,7 +693,7 @@ def main():
     args = parser.parse_args()
     
     print("=" * 70)
-    print("DECEPTICON ML Model Training")
+    print("MIRAGE ML Model Training")
     print("=" * 70)
     
     # Generate or load dataset
