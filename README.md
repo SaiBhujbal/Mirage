@@ -905,14 +905,10 @@ precision ≈ 8% (Axelsson's base-rate fallacy). Any WAF-ML claim ignoring base 
    No payload signal exists — an application authorization problem, not a WAF problem.
 5. **Rate limiting is per-instance, in-memory.** Multi-instance needs Redis; not built.
 6. **The ML algorithm is not novel.** The contribution is evaluation honesty and the MLOps
-   safety chain. Contrastive learning and conformal OOD are prior art — see
-   ml/RESEARCH_DESIGN.md.
+   safety chain. Contrastive learning and conformal OOD are prior art.
 7. **Alertmanager routing not wired**; Slack is webhook-only and dry-run unless configured.
 8. **The MLOps runner is one-shot** — you schedule it (cron / Task Scheduler).
 9. **`demo/novabank.py` is deliberately vulnerable.** Never deploy it.
-
-Full 11-item blind-spot register with per-layer backstops:
-ml/SHIPPABLE_THREAT_MODEL.md
 
 ---
 
@@ -1016,13 +1012,9 @@ ml/
   canary_deploy.py          progressive canary + model registry
   mlops_runner.py           one full guarded cycle
   audit_chain.py            19-check end-to-end audit
-  RESEARCH_DESIGN.md        literature positioning · results · falsified hypothesis
-  SHIPPABLE_THREAT_MODEL.md 11 blind spots + per-layer backstops
 data_pipeline/            KEV · CSIC · PKDD · Nuclei ingestion + CWE mapping
 tests/test_edge_cases.py  48 hostile edge cases (mutation-tested)
 tests/test_attack_coverage.py  92-vector coverage matrix (the evidence for §4b)
-docs/ARCHITECTURE.md      8 architecture diagrams (C4, sequence, state, trust)
-LEGACY.md                 what is deliberately kept and NOT the WAF — read before core/
 ```
 
 > **⚠️ Two engines live in this repo.** `waf/` is the working system. `core/waf_engine.py` and
