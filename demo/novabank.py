@@ -168,8 +168,49 @@ def health():
     return {"status": "ok", "app": "NovaBank"}
 
 
+def _refuse_unsafe_start() -> None:
+    """
+    This app is DELIBERATELY VULNERABLE (SQL injection, XSS, path traversal, over a real
+    SQLite backend holding fake PII). It exists to demonstrate what the WAF stops. Running
+    it anywhere reachable is a breach, not a demo -- so make that hard to do by accident.
+
+    Two guards, both REFUSING rather than warning:
+      1. it binds loopback only; a non-loopback bind must be opted into explicitly
+      2. any production-looking environment is refused outright
+
+    Override only for a genuinely isolated lab (a throwaway container or VM, never a shared
+    or internet-reachable host):
+        NOVABANK_I_UNDERSTAND_THIS_IS_VULNERABLE=yes
+    """
+    ack = os.environ.get("NOVABANK_I_UNDERSTAND_THIS_IS_VULNERABLE", "").strip().lower()
+    acked = ack in ("1", "true", "yes", "on")
+    host = os.environ.get("HOST", "127.0.0.1").strip()
+    env = os.environ.get("ENV", "").strip().lower()
+    loopback = ("127.0.0.1", "localhost", "::1")
+
+    if env in ("prod", "production", "staging") and not acked:
+        print("[NovaBank] REFUSING TO START: ENV=" + repr(env))
+        print("  This app is intentionally vulnerable and must never run in a deployed")
+        print("  environment. It is a demo target for the WAF, not an application.")
+        raise SystemExit(2)
+
+    if host not in loopback and not acked:
+        print("[NovaBank] REFUSING TO START: HOST=" + repr(host) + " is not loopback.")
+        print("  Binding this deliberately vulnerable app to a reachable interface exposes")
+        print("  SQL injection, XSS and path traversal to anyone who can route to it.")
+        print("  If this really is an isolated lab, set:")
+        print("    NOVABANK_I_UNDERSTAND_THIS_IS_VULNERABLE=yes")
+        raise SystemExit(2)
+
+    if acked and host not in loopback:
+        print("[NovaBank] WARNING: bound to " + host + " with the vulnerability acknowledgement")
+        print("  set. Ensure this host is isolated and NOT internet-reachable.")
+
+
 if __name__ == "__main__":
+    _refuse_unsafe_start()
     init_db()
     port = int(os.environ.get("PORT", "8000"))
-    print(f"[NovaBank] vulnerable demo site -> http://127.0.0.1:{port}  (front it with the WAF on :8080)")
-    app.run(host="127.0.0.1", port=port, threaded=True)
+    host = os.environ.get("HOST", "127.0.0.1")
+    print(f"[NovaBank] vulnerable demo site -> http://{host}:{port}  (front it with the WAF on :8080)")
+    app.run(host=host, port=port, threaded=True)

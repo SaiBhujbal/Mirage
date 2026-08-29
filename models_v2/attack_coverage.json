@@ -1,0 +1,175 @@
+{
+  "payload_bearing": {
+    "SQL Injection": {
+      "owasp": "A03:2021",
+      "detected": 10,
+      "total": 10,
+      "rate": 1.0,
+      "misses": []
+    },
+    "Cross-Site Scripting": {
+      "owasp": "A03:2021",
+      "detected": 10,
+      "total": 10,
+      "rate": 1.0,
+      "misses": []
+    },
+    "Command Injection / RCE": {
+      "owasp": "A03:2021",
+      "detected": 9,
+      "total": 9,
+      "rate": 1.0,
+      "misses": []
+    },
+    "Path Traversal / LFI": {
+      "owasp": "A01:2021",
+      "detected": 8,
+      "total": 8,
+      "rate": 1.0,
+      "misses": []
+    },
+    "SSRF": {
+      "owasp": "A10:2021",
+      "detected": 7,
+      "total": 7,
+      "rate": 1.0,
+      "misses": []
+    },
+    "XXE": {
+      "owasp": "A05:2021",
+      "detected": 4,
+      "total": 4,
+      "rate": 1.0,
+      "misses": []
+    },
+    "SSTI / Expression Injection": {
+      "owasp": "A03:2021",
+      "detected": 8,
+      "total": 8,
+      "rate": 1.0,
+      "misses": []
+    },
+    "NoSQL Injection": {
+      "owasp": "A03:2021",
+      "detected": 5,
+      "total": 5,
+      "rate": 1.0,
+      "misses": []
+    },
+    "LDAP / XPath Injection": {
+      "owasp": "A03:2021",
+      "detected": 4,
+      "total": 4,
+      "rate": 1.0,
+      "misses": []
+    },
+    "Deserialization": {
+      "owasp": "A08:2021",
+      "detected": 4,
+      "total": 4,
+      "rate": 1.0,
+      "misses": []
+    },
+    "Prototype Pollution": {
+      "owasp": "A08:2021",
+      "detected": 3,
+      "total": 3,
+      "rate": 1.0,
+      "misses": []
+    },
+    "CRLF / Response Splitting": {
+      "owasp": "A03:2021",
+      "detected": 3,
+      "total": 3,
+      "rate": 1.0,
+      "misses": []
+    },
+    "Open Redirect": {
+      "owasp": "A01:2021",
+      "detected": 3,
+      "total": 3,
+      "rate": 1.0,
+      "misses": []
+    },
+    "JWT Attacks": {
+      "owasp": "A07:2021",
+      "detected": 3,
+      "total": 3,
+      "rate": 1.0,
+      "misses": []
+    },
+    "GraphQL Abuse": {
+      "owasp": "A05:2021",
+      "detected": 2,
+      "total": 2,
+      "rate": 1.0,
+      "misses": []
+    },
+    "Scanner / Recon": {
+      "owasp": "A05:2021",
+      "detected": 6,
+      "total": 6,
+      "rate": 1.0,
+      "misses": []
+    },
+    "Host Header / Cache Poisoning": {
+      "owasp": "A05:2021",
+      "detected": 2,
+      "total": 2,
+      "rate": 1.0,
+      "misses": []
+    },
+    "HTTP Request Smuggling": {
+      "owasp": "A05:2021",
+      "detected": 1,
+      "total": 1,
+      "rate": 1.0,
+      "misses": []
+    }
+  },
+  "ip_reputation_escalation": false,
+  "payload_total": {
+    "detected": 92,
+    "total": 92,
+    "rate": 1.0
+  },
+  "logic_attacks_out_of_scope": {
+    "Broken Access Control (IDOR)": {
+      "owasp": "A01:2021",
+      "detected": false,
+      "why": "GET /api/orders/1002 by user who owns 1001 \u2014 syntactically identical to a legitimate request"
+    },
+    "CSRF": {
+      "owasp": "A01:2021",
+      "detected": false,
+      "why": "A valid state-changing request with a valid session, initiated cross-origin"
+    },
+    "Mass assignment": {
+      "owasp": "A04:2021",
+      "detected": false,
+      "why": "Extra field in an otherwise valid JSON body"
+    },
+    "Price/parameter tampering": {
+      "owasp": "A04:2021",
+      "detected": false,
+      "why": "Valid number, wrong business meaning"
+    },
+    "Credential stuffing (single req)": {
+      "owasp": "A07:2021",
+      "detected": false,
+      "why": "One valid login attempt \u2014 only detectable across many requests, not one"
+    },
+    "Race condition / TOCTOU": {
+      "owasp": "A04:2021",
+      "detected": false,
+      "why": "Two identical valid requests sent concurrently"
+    },
+    "Weak password / auth policy": {
+      "owasp": "A07:2021",
+      "detected": false,
+      "why": "A valid registration with a weak password"
+    }
+  },
+  "benign_false_positive_rate": 0.0,
+  "benign_n": 15
+}

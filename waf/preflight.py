@@ -80,6 +80,35 @@ def check() -> List[Tuple[str, str, str]]:
     else:
         f.append((OK, "Host-header detection active", f"{len(hosts.split(','))} expected host(s)."))
 
+    # ── 2b. open-redirect allowlist ──
+    # An open redirect to an ARBITRARY host is indistinguishable from a legitimate one by shape
+    # alone (next=https://evil.com and next=https://myapp.com are identical in form), so this
+    # check can only work against a list of hosts you own. Unset => that class is undetected.
+    redir = _env("WAF_ALLOWED_REDIRECT_HOSTS") or hosts
+    if not redir:
+        f.append((WARN, "WAF_ALLOWED_REDIRECT_HOSTS is unset",
+                  "Open redirect to an arbitrary host is NOT detected (only //, backslash and "
+                  "javascript:/data: forms are). Set the hosts your redirect params may point at, "
+                  "e.g. WAF_ALLOWED_REDIRECT_HOSTS=myapp.com,www.myapp.com (falls back to "
+                  "EXPECTED_HOSTS)."))
+    else:
+        src = "WAF_ALLOWED_REDIRECT_HOSTS" if _env("WAF_ALLOWED_REDIRECT_HOSTS") else "EXPECTED_HOSTS"
+        f.append((OK, "Open-redirect allowlist active",
+                  f"{len(redir.split(','))} allowed host(s) via {src}."))
+
+    # ── 2c. code-bearing route scoping ──
+    # Injection detection cannot know that a field is SUPPOSED to contain code. Endpoints that
+    # legitimately carry SQL/shell/markup must be scoped or they will be false-positived.
+    shadow_routes = _env("WAF_SHADOW_ROUTES")
+    if shadow_routes:
+        f.append((OK, "Code-bearing routes scoped",
+                  f"{len(shadow_routes.split(','))} route prefix(es) detect-and-log instead of block."))
+    elif _env("WAF_ML_ENFORCE").lower() in ("1", "true", "yes", "on"):
+        f.append((INFO, "WAF_SHADOW_ROUTES is unset while ML enforces",
+                  "If any endpoint legitimately accepts code/SQL/markup (admin query console, "
+                  "paste service, GraphQL), scope it with WAF_SHADOW_ROUTES or it will be blocked. "
+                  "Measure first: python -m waf.calibrate <your-benign-traffic>"))
+
     # ── 3. multi-replica rate limiting ──
     try:
         nworkers = int(workers)

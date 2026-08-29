@@ -204,7 +204,16 @@ class FastPatternEngine:
         lfi_patterns = [
             (r"(?:\.\./|\.\.\\){2,}", 0.9, "Path traversal"),
             (r"(?i)(?:file|php|zip|phar|data|expect|input)://", 0.9, "PHP wrapper"),
-            (r"(?i)/(?:etc|proc|var|usr|home|root)/", 0.7, "Unix path"),
+            # Was `/(?:etc|proc|var|usr|home|root)/`, which flagged ANY path containing
+            # /home/ or /usr/ — ordinary values for a file-management or upload endpoint
+            # (measured: 4/4000 modern API requests). LFI is signalled by TRAVERSAL (handled
+            # by the traversal rules) or by a SENSITIVE target, not by a common directory
+            # name, so match the targets an attacker actually wants.
+            (r"(?i)/etc/(?:passwd|shadow|group|hosts|hostname|issue|crontab|sudoers|ssh/)", 0.9, "Sensitive Unix file"),
+            (r"(?i)/proc/(?:self|\d+)/(?:environ|cmdline|maps|status|cwd|fd)", 0.9, "Procfs disclosure"),
+            (r"(?i)/root/(?:\.ssh|\.bash_history|\.aws|\.docker)", 0.9, "Root home artefact"),
+            (r"(?i)/var/(?:log|spool/mail|www/\.git)/", 0.7, "Sensitive var path"),
+            (r"(?i)/\.(?:ssh/id_[a-z]+|aws/credentials|git/config|env)\b", 0.9, "Credential file"),
             (r"(?i)[a-z]:\\(?:windows|system32|users)", 0.7, "Windows path"),
             (r"(?i)(?:boot\.ini|win\.ini|system\.ini)", 0.95, "Windows system file"),
             (r"%(?:00|2e|2f|5c)", 0.8, "Encoded traversal"),
@@ -354,6 +363,14 @@ class FastPatternEngine:
         
         # Quick character pattern checks
         if '../' in text or '..\\' in text:
+            categories.add("LFI")
+        # Non-traversal LFI: a direct read of a sensitive target ("/etc/passwd",
+        # "/proc/self/environ", "/root/.ssh/id_rsa") carries no "../", so without these
+        # tokens the prefilter dropped it before the LFI rules ever ran.
+        if any(tok in text_lower for tok in (
+                '/etc/', '/proc/', '/root/', 'passwd', 'shadow', 'environ',
+                'id_rsa', 'id_dsa', 'id_ed25519', '.aws/', '.git/config', 'boot.ini',
+                'win.ini', 'system32')):
             categories.add("LFI")
         if '<' in text and '>' in text:
             categories.add("XSS")

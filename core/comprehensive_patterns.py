@@ -237,7 +237,13 @@ RCE_PATTERNS = [
     # \b(?!\s*=) : match a bare command invocation (";id", "|whoami", "`id`") but NOT a
     # query/form parameter that merely happens to be named id/pwd/hostname ("id=12345",
     # "&pwd=secret") — a shell command is never written "id=". Fixes a high-volume FP.
-    AttackPattern("RCE-011", AttackCategory.RCE, r"(?i)(?:^|[\s;&|`])(id|whoami|uname|hostname|pwd|ifconfig|ipconfig)\b(?!\s*=)", 0.90, "System info command", owasp="A03:2021"),
+    # Split by ambiguity. "whoami"/"ifconfig"/"netstat" are unambiguous — a space in front is
+    # enough. "id" and "pwd" are 2-3 letter tokens that occur constantly in legitimate traffic:
+    # a GraphQL selection set ("{ id total }"), a JSON key, ordinary prose ("enter your pwd").
+    # For those, require actual shell chaining (; & | ` $( or start-of-value), not mere
+    # whitespace. Measured: whitespace+"id" alone false-positived on 286/4000 modern API requests.
+    AttackPattern("RCE-011", AttackCategory.RCE, r"(?i)(?:^|[\s;&|`])(whoami|uname|hostname|ifconfig|ipconfig|netstat)\b(?!\s*[=:])", 0.90, "System info command", owasp="A03:2021"),
+    AttackPattern("RCE-011b", AttackCategory.RCE, r"(?i)(?:^|[;&|`]|\$\()\s{0,4}(id|pwd)\b(?!\s*[=:])", 0.90, "System info command (chained)", owasp="A03:2021"),
     AttackPattern("RCE-012", AttackCategory.RCE, r"(?i)(?:^|[\s;&|`])(wget|curl|fetch|nc|netcat|ncat)\s+", 0.95, "Network command", owasp="A03:2021"),
     AttackPattern("RCE-013", AttackCategory.RCE, r"(?i)(?:^|[\s;&|`])(rm|del|rmdir|mv|cp|chmod|chown)\s+", 0.90, "File manipulation", owasp="A03:2021"),
     

@@ -130,6 +130,17 @@ BENIGN = {
     # "exec"/"execute" as plain English must NOT be flagged (only DBA-token exec is SQLi).
     "verb_execute_prose": dict(query="q=execute the marketing plan this quarter"),
     "verb_exec_summary": dict(method="POST", body="msg=our executive summary is ready"),
+    # Modern API traffic (JSON/GraphQL/OAuth/file paths). These shapes do not exist in the
+    # CSIC/PKDD corpora, and each one below was a measured false positive against 4,000
+    # generated modern requests (14.37% FP before these fixes, 0.00% after).
+    "graphql_id_field": dict(method="POST", path="/graphql",
+                             body='{"query":"{ user(id:42){ name email orders { id total } } }"}'),
+    "json_id_key": dict(method="POST", path="/api", body='{"id":7,"total":42}'),
+    "prose_pwd": dict(method="POST", body="msg=please enter your pwd here"),
+    "oauth_callback": dict(path="/oauth/callback", query="code=d3fd05dcb0974885&state=42446"),
+    "filepath_home": dict(path="/files", query="path=/home/user/docs/report_2024.pdf"),
+    "filepath_var_www": dict(path="/files", query="file=/var/www/uploads/report.pdf"),
+    "filepath_usr_share": dict(path="/files", query="p=/usr/share/doc/readme.txt"),
     # Quote-split detection must not FP on benign intra-word apostrophes/quotes.
     "apostrophe_id": dict(method="POST", body="msg=I'd like to help you today"),
     "name_obrien": dict(query="name=O'Brien"),
@@ -159,6 +170,17 @@ ATTACKS.update({
     "crlf_xff_spoof": dict(query="q=%0d%0aX-Forwarded-For:%201.2.3.4"),
     "crlf_arbitrary_header": dict(query="u=test%0d%0aX-Injected:%20true"),
     "crlf_log_forging": dict(query="u=test%0aFAKE%20LOG%20ENTRY"),
+    # Narrowing the ambiguous "id"/"pwd" command tokens and the over-broad "/home/|/usr/"
+    # LFI rule must not cost real detection. Chained shell invocation still blocks, and
+    # non-traversal reads of sensitive targets now block (the old rules missed id_rsa).
+    "rce_chained_id": dict(query="cmd=1;id"),
+    "rce_subshell_id": dict(method="POST", path="/run", body="c=$(id)"),
+    "rce_backtick_id": dict(method="POST", path="/run", body="c=`id`"),
+    "rce_netstat": dict(query="x=1;netstat -an"),
+    "lfi_etc_passwd_direct": dict(path="/files", query="f=/etc/passwd"),
+    "lfi_proc_environ": dict(path="/files", query="f=/proc/self/environ"),
+    "lfi_root_ssh_key": dict(path="/files", query="f=/root/.ssh/id_rsa"),
+    "lfi_aws_credentials": dict(path="/files", query="f=/home/u/.aws/credentials"),
 })
 
 

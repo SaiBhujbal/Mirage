@@ -391,6 +391,10 @@ python ml/audit_chain.py                      # 19-check end-to-end audit
 python -m pytest tests/ -q                    # hostile edge cases + regressions
 python -m harness.run --gate-ml               # hard gates: recall, FP, latency, ReDoS
 python ml/eval_cross_dataset.py               # the cross-dataset failure result
+python -m ml.bench_modern                     # modern JSON/GraphQL/JWT API traffic
+python -m ml.bench_dilution                   # dilution-evasion resistance
+python -m waf.calibrate <your-traffic>        # FP rate on YOUR traffic, per posture
+python -m waf.preflight                       # config checks (exit 1 on CRITICAL)
 ```
 
 | Metric | Value |
@@ -441,21 +445,38 @@ not reading it.
 
 **Read this first if you are evaluating this repo.**
 
-1. **ML enforcement is calibration-gated.** The *lexical* model was unusable to enforce on (~5%
-   benign FP). The grammar-conformance detector passes the harness enforcement gate — 0 FP on 12,000
-   real CSIC-2010 benign requests — so `WAF_ML_ENFORCE` is supported. It still ships **off**: run
-   shadow on *your* traffic first.
-2. **Datasets are old.** CSIC-2010 / PKDD-2007 are 15+ years old with no modern JSON/GraphQL API
-   traffic. Numbers are directional for *those* distributions.
-3. **Dilution evasion is not solved.** An adaptive attacker padding attacks with benign context
-   achieves ~25–47% success against the ML layer. Signatures are the backstop.
-4. **Business-logic attacks are out of scope** (IDOR, price tampering, auth-bypass-by-design).
-5. **Fields that legitimately carry code will false-positive.** An admin SQL console, a paste service,
-   a GraphQL endpoint — the detector cannot know a field is *supposed* to contain code. Scope them
-   with `WAF_SHADOW_ROUTES`.
+1. **ML enforcement is calibration-gated, and there is now a tool for the gate.** The *lexical*
+   model was unusable to enforce on — measured here at **94.7% FP on 3,000 real CSIC requests**,
+   because it routes unfamiliar benign traffic to the honeypot as "novel". The
+   grammar-conformance detector scores **0 FP on the same 3,000**, and 0/12,000 on the full CSIC
+   benign set. Get the number for *your* traffic, per posture, with the offending rules and paths
+   named: `python -m waf.calibrate <your-traffic>`. It ships **off** regardless — measure first.
+2. **The public datasets are old — so the evaluation no longer relies only on them.** CSIC-2010
+   and PKDD-2007 have no JSON, GraphQL, JWT or base64 traffic. `python -m ml.bench_modern` scores
+   modern API shapes directly: **0.00% FP [0, 0.10] and 100% recall on 4,000 each**. That run is
+   what exposed three false-positive classes invisible to the old corpora — a GraphQL `id` field
+   read as a shell command, legitimate OAuth callbacks, ordinary `/home/...` file paths (14.37% FP
+   before the fix). Caveat kept: this is *generated* modern traffic, which closes the "no modern
+   traffic" gap, not the "no production traffic" one.
+3. **Dilution evasion no longer works** — reproduce with `python -m ml.bench_dilution`. Padding an
+   attack with benign context defeats models that score *statistical shape*; it moves nothing the
+   grammar-conformance detector reads. Measured **100% detection at every level**, from 1x operator
+   padding to a payload buried in 32 KB of benign prose. Statistical/lexical models are the ones
+   dilution beats — which is why they do not enforce.
+4. **Business-logic attacks are out of scope** (IDOR, price tampering, auth-bypass-by-design). No
+   payload signal exists — an application authorization problem, not a WAF problem. This one is
+   structural and will not be closed.
+5. **Fields that legitimately carry code will false-positive.** An admin SQL console, a paste
+   service, a GraphQL/DSL endpoint — no distribution-free rule can know a field is *supposed* to
+   contain code. Scope those routes with `WAF_SHADOW_ROUTES`; `waf.calibrate` names the paths to
+   scope, and preflight flags the setting when ML enforces.
 6. **Open redirect to an arbitrary host needs configuration.** `next=https://evil.com` is
-   structurally identical to `next=https://myapp.com`. Set `WAF_ALLOWED_REDIRECT_HOSTS`.
-7. **`demo/novabank.py` is deliberately vulnerable.** Never deploy it.
+   structurally identical to `next=https://myapp.com`. Set `WAF_ALLOWED_REDIRECT_HOSTS` (or
+   `EXPECTED_HOSTS`); `python -m waf.preflight` now warns while it is unset, so the gap is visible
+   instead of silent.
+7. **`demo/novabank.py` is deliberately vulnerable** — and now refuses to start unless it is safe
+   to. It binds loopback only; a non-loopback `HOST`, or `ENV=production|staging`, exits rather than
+   serving, unless `NOVABANK_I_UNDERSTAND_THIS_IS_VULNERABLE=yes` is set for an isolated lab.
 
 **Readiness matrix**
 

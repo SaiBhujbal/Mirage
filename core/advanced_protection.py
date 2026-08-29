@@ -431,15 +431,20 @@ class JWTDetector:
                         raw_evidence=uri[:100]
                     )
         
-        # CSRF via state parameter
+        # CSRF via state parameter.
+        # ADVISORY ONLY (confidence below the 0.5 enforcement threshold). A short `state` is a
+        # weakness in YOUR OWN OAuth implementation, not an attack by the client sending it:
+        # blocking it 403s the legitimate user mid-login for a flaw on the server side, breaking
+        # every sign-in through that provider. Measured: this blocked 285/4000 legitimate OAuth
+        # callbacks. It is reported so you can fix the state generation, never enforced.
         if 'state=' in content_lower:
             match = re.search(r'state=([^&\s]*)', content, re.IGNORECASE)
             if match and len(match.group(1)) < 8:
                 return AdvancedDetection(
-                    threat_level=ThreatLevel.MEDIUM,
+                    threat_level=ThreatLevel.LOW,
                     category="OAUTH_WEAK_STATE",
-                    description="Weak OAuth state parameter - CSRF risk",
-                    confidence=0.7,
+                    description="Weak OAuth state parameter - CSRF risk (advisory: fix state generation)",
+                    confidence=0.45,
                     raw_evidence=match.group(0)
                 )
         
