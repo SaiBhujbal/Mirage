@@ -151,6 +151,14 @@ ATTACKS.update({
     # Quote-splitting evasion of shell commands (w'h'oami -> whoami) must be caught.
     "rce_quote_split": dict(method="POST", path="/run", body="c=w'h'oami"),
     "rce_quote_split_dq": dict(method="POST", path="/run", body='c=if"con"fig'),
+    # CRLF-001 only allowlisted Set-Cookie|Location|Content-Type, so every other injected
+    # header slipped through — Content-Length/Transfer-Encoding are response splitting and
+    # request smuggling, X-Forwarded-For forges the client identity this WAF rate-limits on.
+    "crlf_content_length": dict(query="q=%0d%0aContent-Length:%200"),
+    "crlf_transfer_encoding": dict(query="q=%0d%0aTransfer-Encoding:%20chunked"),
+    "crlf_xff_spoof": dict(query="q=%0d%0aX-Forwarded-For:%201.2.3.4"),
+    "crlf_arbitrary_header": dict(query="u=test%0d%0aX-Injected:%20true"),
+    "crlf_log_forging": dict(query="u=test%0aFAKE%20LOG%20ENTRY"),
 })
 
 
@@ -176,6 +184,27 @@ try:
         _decide(method="POST", body="x=" + payload)
         elapsed = time.perf_counter() - t0
         assert elapsed < 1.0, f"ReDoS regression: scan took {elapsed:.1f}s (expected <1s)"
+
+    def test_multiline_body_is_not_crlf_flagged():
+        # The CRLF query rule must NOT extend to bodies: multi-line prose is ordinary there.
+        assert _allowed(method="POST", path="/c", body="desc=Steps: do X\r\nNote: it fails")
+        assert _allowed(method="POST", path="/c", body="comment=hi\r\nX-Something: value")
+
+    def test_open_redirect_allowlist():
+        # Arbitrary-host open redirect can only be decided against an allowlist of your own
+        # hosts. Configured => foreign hosts blocked, own hosts allowed. Unset => check OFF.
+        os.environ["WAF_ALLOWED_REDIRECT_HOSTS"] = "myapp.com"
+        try:
+            waf = LayeredWAF(ml_enforce=False)
+        finally:
+            os.environ.pop("WAF_ALLOWED_REDIRECT_HOSTS", None)
+        hdr = {"user-agent": "x"}
+        evil = waf.evaluate("GET", "/go", "next=https://evil.example.com/phish", "", hdr, "203.0.113.7")
+        mine = waf.evaluate("GET", "/go", "next=https://myapp.com/dashboard", "", hdr, "203.0.113.8")
+        rel = waf.evaluate("GET", "/go", "next=/dashboard", "", hdr, "203.0.113.9")
+        assert evil.action != "ALLOW", "foreign redirect host must be blocked when allowlist is set"
+        assert mine.action == "ALLOW", "own host must not be blocked"
+        assert rel.action == "ALLOW", "relative redirect must not be blocked"
 
     def test_shadow_route_detects_but_does_not_block():
         # Content-type boundary: a route that legitimately carries SQL/code must DETECT

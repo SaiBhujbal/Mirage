@@ -495,7 +495,13 @@ LDAP_PATTERNS = [
 # ============================================================================
 
 CRLF_PATTERNS = [
-    AttackPattern("CRLF-001", AttackCategory.CRLF, r"(?:%0d%0a|%0d|%0a|\r\n|\r|\n)(?:Set-Cookie|Location|Content-Type):", 0.95, "HTTP header injection", owasp="A03:2021"),
+    # The header allowlist was only Set-Cookie|Location|Content-Type, so injecting ANY other
+    # header slipped through — notably Content-Length / Transfer-Encoding (response splitting
+    # and request smuggling) and X-Forwarded-For (client-identity spoofing, which this WAF's
+    # own rate limiting and reputation key on). Broadened to the headers that actually enable
+    # an attack. Deliberately NOT "any token:" — decoded multi-line form bodies legitimately
+    # contain "\nWord:" prose, which a catch-all would false-positive on.
+    AttackPattern("CRLF-001", AttackCategory.CRLF, r"(?i)(?:%0d%0a|%0d|%0a|\r\n|\r|\n)\s{0,8}(?:Set-Cookie2?|Location|Content-(?:Type|Length|Disposition|Encoding)|Transfer-Encoding|Refresh|Authorization|X-Forwarded-(?:For|Host|Proto)|Access-Control-Allow-Origin)\s{0,8}:", 0.95, "HTTP header injection", owasp="A03:2021"),
     AttackPattern("CRLF-002", AttackCategory.CRLF, r"(?:%0d%0a){2}|(?:\r\n){2}|(?:%0d){2}|(?:%0a){2}", 0.90, "CRLF double newline", owasp="A03:2021"),
     AttackPattern("CRLF-003", AttackCategory.CRLF, r"(?i)(?:%0d%0a|%0a)(?:HTTP/|<html|<script)", 0.95, "Response splitting", owasp="A03:2021"),
 ]

@@ -16,7 +16,7 @@ evaluate() is pure/fast; the server wraps it with proxying, honeypot responses, 
 Slack, and metrics.
 """
 from __future__ import annotations
-import re, time, threading
+import re, time, threading, urllib.parse
 from collections import deque, defaultdict, Counter
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional
@@ -162,6 +162,40 @@ _REDIRECT_BYPASS = re.compile(
     r"[a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,}")
 
 
+# CRLF in a QUERY STRING only. A newline in a URL query is essentially never legitimate,
+# so here we can catch what the signature tier deliberately will not: injection of an
+# ARBITRARY header ("\r\nX-Injected: true" — response splitting with any header name) and
+# bare newline log forging ("\nFAKE LOG ENTRY"). This is scoped to the query on purpose:
+# request BODIES legitimately contain multi-line text, where the same rule would false-
+# positive on ordinary prose. Both forms (percent-encoded and raw) are matched; bounded
+# quantifiers keep it linear.
+_CRLF_QUERY_HEADER = re.compile(r"(?i)(?:%0d%0a|%0d|%0a|\r\n|\r|\n)\s{0,8}[A-Za-z][A-Za-z0-9-]{0,40}\s{0,8}:")
+_CRLF_QUERY_BARE = re.compile(r"(?i)(?:%0d%0a|%0d|%0a|\r\n|\r|\n)\s{0,8}\S")
+
+
+# Redirect-target parameters, and an absolute URL's host. An open redirect to an ARBITRARY
+# host cannot be told apart from a legitimate one by shape alone (next=https://evil.com and
+# next=https://myapp.com are identical in form) — it needs to know which hosts are yours.
+# So this check activates ONLY when WAF_ALLOWED_REDIRECT_HOSTS (or EXPECTED_HOSTS) is set;
+# unset means the check is off and behaviour is unchanged (no false positives by default).
+_REDIR_PARAM = re.compile(r"(?i)(?:^|[?&])(?:next|url|redirect|redirect_uri|return|return_to|returnurl|dest|destination|continue|goto|target|rurl)=([^&]+)")
+
+
+def _redirect_host_signals(query: str, body: str, allowed_hosts):
+    if not allowed_hosts:
+        return []
+    out = []
+    for src in (query or "", body or ""):
+        for m in _REDIR_PARAM.finditer(src or ""):
+            raw = urllib.parse.unquote(m.group(1))
+            if not re.match(r"(?i)^(?:https?:)?//", raw):
+                continue                      # relative target: same-origin, fine
+            host = urllib.parse.urlsplit(raw if "://" in raw else "http:" + raw).hostname
+            if host and host.lower() not in allowed_hosts:
+                out.append(("open_redirect", 0.85, raw[:60]))
+    return out
+
+
 def _payload_signals(query: str, body: str):
     out = []
     for src in (query or "", body or ""):
@@ -171,6 +205,14 @@ def _payload_signals(query: str, body: str):
             out.append(("prototype_pollution", 0.80, src[:60]))
         if _REDIRECT_BYPASS.search(src):
             out.append(("open_redirect", 0.75, src[:60]))
+    q = query or ""
+    if q:
+        if _CRLF_QUERY_HEADER.search(q):
+            out.append(("crlf_injection", 0.85, q[:60]))
+        elif _CRLF_QUERY_BARE.search(q):
+            # No header name — log forging / response manipulation rather than header
+            # injection. Still not legitimate in a query string.
+            out.append(("crlf_injection", 0.70, q[:60]))
     return out
 
 
@@ -238,6 +280,13 @@ class LayeredWAF:
         self.shadow_routes = tuple(
             p.strip() for p in os.environ.get("WAF_SHADOW_ROUTES", "").split(",") if p.strip()
         )
+        # Hosts a redirect parameter may legitimately point at. Falls back to EXPECTED_HOSTS
+        # (the hostnames this deployment serves) so one setting covers both. Unset => the
+        # arbitrary-host open-redirect check is OFF (shape alone cannot decide it).
+        _redir = os.environ.get("WAF_ALLOWED_REDIRECT_HOSTS") or os.environ.get("EXPECTED_HOSTS", "")
+        self.allowed_redirect_hosts = {h.strip().lower() for h in _redir.split(",") if h.strip()}
+        if not self.allowed_redirect_hosts and expected_hosts:
+            self.allowed_redirect_hosts = {h.lower() for h in expected_hosts}
         # Shared window when REDIS_URL is set (multi-replica correctness), else per-process.
         self.rate = build_rate_limiter(capacity=rate_capacity)
         self.metrics = Counter()
@@ -329,7 +378,9 @@ class LayeredWAF:
         # because standard values like `Accept: */*` false-positive on SQL comment rules.
         try:
             for cat, sev, ev in (_header_signals(headers, self.expected_hosts)
-                                 + _path_signals(path) + _payload_signals(query, body)):
+                                 + _path_signals(path) + _payload_signals(query, body)
+                                 + _redirect_host_signals(query, body,
+                                                          getattr(self, "allowed_redirect_hosts", None))):
                 d.reasons.append(f"header:{cat}")
                 if sev > best_sev:
                     best_sev, d.category, d.matched, d.layer = sev, cat, ev, "headers"

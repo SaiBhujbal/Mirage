@@ -11,12 +11,14 @@ global:
     environment: 'production'
     cluster: 'waf-cluster-01'
 
-# Alertmanager configuration (optional - uncomment if using Alertmanager)
-# alerting:
-#   alertmanagers:
-#     - static_configs:
-#         - targets:
-#             - 'alertmanager:9093'
+# Alertmanager routing. The alertmanager service (docker-compose.yml) loads its routing,
+# grouping, throttling and inhibit rules from deploy/alertmanager/alertmanager.yml.
+# Alerts themselves are defined in the rule_files below.
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - 'alertmanager:9093'
 
 # Load alert rules
 rule_files:

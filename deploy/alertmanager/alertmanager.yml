@@ -1,0 +1,107 @@
+# Alertmanager routing for the WAF.
+#
+# config/prometheus.yml already points Prometheus at alertmanager:9093 and loads the rules
+# in config/prometheus_rules/waf_alerts.yml — this file is the missing half: what happens to
+# an alert once it fires (grouping, throttling, who gets told, what suppresses what).
+#
+# Secrets are read from the environment, never inlined:
+#   SLACK_WEBHOOK_URL   same webhook the WAF's own notifier uses (unset => Slack receiver
+#                       is simply never reachable; alerts still resolve/group normally)
+#
+# Start it with the alertmanager service in docker-compose.yml.
+
+global:
+  # If an alert stops firing, Alertmanager waits this long before declaring it resolved.
+  resolve_timeout: 5m
+  slack_api_url: '${SLACK_WEBHOOK_URL}'
+
+# Templates for readable Slack messages.
+templates:
+  - '/etc/alertmanager/templates/*.tmpl'
+
+route:
+  # Group alerts so an attack burst is ONE notification, not hundreds — the same principle
+  # the WAF's own Slack notifier uses (throttle + aggregate).
+  group_by: ['alertname', 'severity']
+  group_wait: 30s          # wait for other alerts in the group before the first send
+  group_interval: 5m       # then batch further alerts for this group
+  repeat_interval: 4h      # re-notify about a still-firing alert this often
+  receiver: 'default'
+
+  routes:
+    # Security-critical: an active attack or a zero-day spike. Notify fast, repeat often.
+    - matchers:
+        - severity = "critical"
+        - alertname =~ "PossibleDDoS|ZeroDaySpike|HighAttackRate"
+      receiver: 'security-critical'
+      group_wait: 10s
+      repeat_interval: 30m
+      continue: true       # also fall through to the generic critical receiver
+
+    # Any other critical (latency blowout, component down).
+    - matchers:
+        - severity = "critical"
+      receiver: 'critical'
+      group_wait: 30s
+      repeat_interval: 1h
+
+    # Warnings: batch them, don't page.
+    - matchers:
+        - severity = "warning"
+      receiver: 'warnings'
+      group_wait: 2m
+      group_interval: 15m
+      repeat_interval: 12h
+
+# Suppression: while a page-worthy incident is firing, silence the noisier symptoms of the
+# same incident so responders see the cause, not fifty consequences.
+inhibit_rules:
+  # A DDoS makes latency and throughput alerts inevitable — suppress them.
+  - source_matchers: [alertname = "PossibleDDoS"]
+    target_matchers: [alertname =~ "HighMLLatency|CriticalMLLatency|LowThroughput"]
+    equal: ['job']
+
+  # A critical alert supersedes the warning-level version of the same alert.
+  - source_matchers: [severity = "critical"]
+    target_matchers: [severity = "warning"]
+    equal: ['alertname', 'job']
+
+receivers:
+  - name: 'default'
+    slack_configs:
+      - channel: '#waf-alerts'
+        send_resolved: true
+        title: '{{ .Status | toUpper }} · {{ .CommonLabels.alertname }}'
+        text: >-
+          {{ range .Alerts }}{{ .Annotations.summary }}{{ if .Annotations.description }}
+          — {{ .Annotations.description }}{{ end }}
+          {{ end }}
+
+  - name: 'security-critical'
+    slack_configs:
+      - channel: '#waf-alerts'
+        send_resolved: true
+        title: ':rotating_light: SECURITY · {{ .CommonLabels.alertname }} ({{ .Alerts.Firing | len }} firing)'
+        text: >-
+          {{ range .Alerts }}*{{ .Annotations.summary }}*{{ if .Annotations.description }}
+          {{ .Annotations.description }}{{ end }}
+          {{ end }}
+        # Runbook links so whoever is paged knows what to do.
+        actions:
+          - type: button
+            text: 'Grafana'
+            url: 'http://localhost:3000/d/waf_overview'
+
+  - name: 'critical'
+    slack_configs:
+      - channel: '#waf-alerts'
+        send_resolved: true
+        title: ':red_circle: CRITICAL · {{ .CommonLabels.alertname }}'
+        text: '{{ range .Alerts }}{{ .Annotations.summary }}{{ "\n" }}{{ end }}'
+
+  - name: 'warnings'
+    slack_configs:
+      - channel: '#waf-alerts'
+        send_resolved: false
+        title: ':warning: {{ .CommonLabels.alertname }} ({{ .Alerts.Firing | len }})'
+        text: '{{ range .Alerts }}{{ .Annotations.summary }}{{ "\n" }}{{ end }}'

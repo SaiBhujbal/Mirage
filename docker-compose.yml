@@ -108,6 +108,47 @@ services:
     networks:
       - waf-network
 
+  # Alertmanager — routes/groups/throttles the alerts Prometheus fires.
+  # Routing config: deploy/alertmanager/alertmanager.yml (severity-based routes, inhibit
+  # rules so a DDoS doesn't also page for the latency it obviously causes).
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: mirage-alertmanager
+    ports:
+      - "127.0.0.1:9093:9093"      # internal only; reach it through the network
+    volumes:
+      - ./deploy/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - alertmanager-data:/alertmanager
+    environment:
+      # Same webhook the WAF's own notifier uses. Unset => Slack receiver unreachable,
+      # alerts still group/resolve normally (no crash).
+      - SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL:-}
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+    restart: unless-stopped
+    networks:
+      - waf-network
+
+  # MLOps scheduler — runs the GUARDED retrain cycle on a cadence.
+  # This only decides WHEN a cycle runs; human review, poison guard, accumulation
+  # threshold, promotion gate and canary all still apply inside each cycle.
+  mlops:
+    build: .
+    container_name: mirage-mlops
+    command: ["python", "-m", "ml.mlops_scheduler"]
+    environment:
+      - MLOPS_INTERVAL_S=${MLOPS_INTERVAL_S:-21600}   # 6h
+      - SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL:-}
+    volumes:
+      - ./data/corpus:/app/data/corpus                # capture feed + cycle journal
+      - ./models_v2:/app/models_v2                    # registry + model artifacts
+    restart: unless-stopped
+    depends_on:
+      - waf
+    networks:
+      - waf-network
+
   # Grafana for dashboards
   grafana:
     image: grafana/grafana:latest
@@ -149,6 +190,7 @@ services:
 volumes:
   redis-data:
   prometheus-data:
+  alertmanager-data:
   grafana-data:
   loki-data:
   waf-security:
