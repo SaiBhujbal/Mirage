@@ -140,13 +140,14 @@ is structurally impossible. Every safety stop in the retrain path is independent
 ### L1 — Rate limit → `429`
 ```mermaid
 sequenceDiagram
-    participant A as Attacker (1 IP)
-    participant W as WAF · L1
+    participant A as Attacker
+    participant W as WAF L1
     participant O as Origin
+
     A->>W: 130 requests in 10s
-    W->>O: forward first 120 (within budget)
-    W--xA: 429 Too Many Requests (last 10)
-    Note over W: per-IP window; Redis-shared across replicas
+    W->>O: Forward first 120 requests
+    W-->>A: 429 Too Many Requests
+    Note over W: Per IP rate limit, Redis shared state
 ```
 
 ### L2 — Signatures (**enforces**) → `403`
