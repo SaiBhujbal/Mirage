@@ -97,7 +97,7 @@ graph LR
 | Layer | Mechanism | Enforces? | Latency | Failure mode if it misfires |
 |---|---|---|---|---|
 | **L1** Rate limit | per-IP sliding window (Redis-shared) | ✅ | ~0.01 ms | legitimate burst throttled (429) |
-| **L2** Signatures | 190 OWASP-mapped rules | ✅ **yes** | ~0.2 ms | false 403 — rare, rules are precise |
+| **L2** Signatures | 191 OWASP-mapped rules | ✅ **yes** | ~0.2 ms | false 403 — rare, rules are precise |
 | **L3** Advanced | XXE/SSTI/SSRF/JWT/encoding-depth | ✅ critical only | ~0.3 ms | false 403 on exotic-but-valid payloads |
 | **L4** ML | grammar-conformance + lexical models | ❌ **shadow** | ~0.6 ms | would false-403 until calibrated |
 | **L5** Novelty | Mahalanobis to benign centroid | ❌ shadow | ~0.05 ms | false honeypot routing |
@@ -404,6 +404,8 @@ python -m waf.preflight                       # config checks (exit 1 on CRITICA
 | Attack recall (in-domain, CSIC-2010) | **92.2%** · ROC-AUC **0.992** |
 | Gate decision latency | **1.04 ms mean · 1.53 ms p99** · ~958 rps/core |
 | Grammar-conformance detector, real CSIC benign | **0 / 12,000** false positives (95% CI [0, 0.032%]) |
+| Modern API traffic (JSON/GraphQL/JWT/base64) | **0 / 4,000** FP (95% CI [0, 0.10%]) · **100%** recall |
+| Dilution evasion (1x padding → 32 KB benign prose) | **100% detection at every level** |
 
 **The test suite is mutation-tested.** Breaking signature enforcement deliberately failed 7 tests
 (good) — but breaking rate-limit expiry **passed**, exposing a vacuous test of my own, which was
